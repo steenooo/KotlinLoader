@@ -1,6 +1,5 @@
 package dev.steyn.kotlinloader.loader
 
-import dev.steyn.kotlinloader.api.KotlinPlugin
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES
 import org.objectweb.asm.ClassVisitor

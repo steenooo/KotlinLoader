@@ -20,7 +20,7 @@ class KotlinPluginLoader(
         val server: Server,
         val pluginLoader: JavaPluginLoader,
         private val loaders: MutableList<KotlinPluginClassLoader> = CopyOnWriteArrayList<KotlinPluginClassLoader>(),
-        private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
+        private val classes: ConcurrentHashMap<String, Class<*>>
 ) : PluginLoader by pluginLoader {
 
     override fun loadPlugin(file: File): Plugin {
@@ -29,6 +29,9 @@ class KotlinPluginLoader(
         }
         return loadPlugin(file, getPluginDescription(file))
     }
+
+
+
 
      fun loadPlugin(file: File, desc: PluginDescriptionFile) : Plugin{
         if (!file.exists()) {

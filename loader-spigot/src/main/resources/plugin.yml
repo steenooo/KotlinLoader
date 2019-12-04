@@ -1,0 +1,3 @@
+name: KotlinPluginLoader
+main: dev.steyn.kotlinloader.KotlinLoaderPlugin
+version: ${project.version}

@@ -7,6 +7,7 @@ import org.bukkit.Server
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLoader
 import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
@@ -19,14 +20,20 @@ class KotlinPluginLoader(
         val server: Server,
         val pluginLoader: JavaPluginLoader,
         private val loaders: MutableList<KotlinPluginClassLoader> = CopyOnWriteArrayList<KotlinPluginClassLoader>(),
-        val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
+        private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
 ) : PluginLoader by pluginLoader {
 
     override fun loadPlugin(file: File): Plugin {
         if (!file.exists()) {
             throw PluginFileMissingException(file)
         }
-        val desc = getPluginDescription(file)
+        return loadPlugin(file, getPluginDescription(file))
+    }
+
+     fun loadPlugin(file: File, desc: PluginDescriptionFile) : Plugin{
+        if (!file.exists()) {
+            throw PluginFileMissingException(file)
+        }
         val parent = file.parentFile
         val dataFolder = File(parent, desc.name)
         server.unsafe.checkSupported(desc)

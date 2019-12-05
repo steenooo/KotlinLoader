@@ -1,0 +1,5 @@
+name: KotlinLoader
+main: dev.steyn.kotlinloader.KotlinLoader
+version: ${project.version}
+api-version: 1.13
+load: STARTUP

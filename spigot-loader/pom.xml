@@ -9,16 +9,14 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>loader-spigot</artifactId>
+  <artifactId>spigot-loader</artifactId>
+
   <dependencies>
-
-
     <dependency>
       <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
+      <artifactId>spigot</artifactId>
       <version>1.14.4-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
-
-
 </project>

@@ -1,27 +1,71 @@
 package dev.steyn.kotlinloader.loader
 
 import dev.steyn.kotlinloader.api.KotlinPlugin
+import dev.steyn.kotlinloader.exception.InjectException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
+import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
+import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
+import dev.steyn.kotlinloader.loader.reflect.makeMutable
+import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.configuration.serialization.ConfigurationSerialization
-import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.PluginDescriptionFile
-import org.bukkit.plugin.PluginLoader
+import org.bukkit.event.Event
+import org.bukkit.event.Listener
+import org.bukkit.plugin.*
 import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.jar.JarFile
 import java.util.logging.Level
+import java.util.regex.Pattern
 
 class KotlinPluginLoader(
-        val server: Server,
-        val pluginLoader: JavaPluginLoader,
-        private val loaders: MutableList<KotlinPluginClassLoader> = CopyOnWriteArrayList<KotlinPluginClassLoader>(),
-        private val classes: ConcurrentHashMap<String, Class<*>>
-) : PluginLoader by pluginLoader {
+        val server: Server
+) : PluginLoader {
+
+    private val loaders: MutableList<KotlinPluginClassLoader> = CopyOnWriteArrayList<KotlinPluginClassLoader>()
+    private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
+    private  val hackedClassMap: HackedClassMap
+    private  val default: JavaPluginLoader
+    
+    init {
+        val manager = Bukkit.getPluginManager()
+        if (manager !is SimplePluginManager) throw Exception("Invalid PluginManager.")
+
+        val associationField = manager.javaClass.getDeclaredField("fileAssociations")
+        associationField.isAccessible = true
+        val map = associationField.get(manager) as MutableMap<Pattern, PluginLoader>
+        var _default: JavaPluginLoader? = null
+        val iter = map.iterator()
+
+        while(iter.hasNext()) {
+            val curr = iter.next()
+            val currVal = curr.value
+            if(currVal is JavaPluginLoader) {
+                _default = currVal
+            }
+        }
+
+        default = _default ?: throw InjectException("Unable to find JavaPluginLoader")
+        val field = JavaPluginLoader::class.java.getDeclaredField("classes")
+        field.isAccessible = true
+        val _classes = field.get(default) as ConcurrentHashMap<String, Class<*>>
+        hackedClassMap = HackedClassMap(_classes, this)
+        field.makeMutable()
+        field.set(default, hackedClassMap)
+    }
+
+
+    override fun createRegisteredListeners(listener: Listener, plugin: Plugin): MutableMap<Class<out Event>, MutableSet<RegisteredListener>> =
+            default.createRegisteredListeners(listener
+    , plugin)
+
+    override fun getPluginFileFilters(): Array<Pattern> = default.pluginFileFilters
+
+    override fun getPluginDescription(file: File) = default.getPluginDescription(file)
 
     override fun loadPlugin(file: File): Plugin {
         if (!file.exists()) {
@@ -31,12 +75,14 @@ class KotlinPluginLoader(
     }
 
 
-
-
-     fun loadPlugin(file: File, desc: PluginDescriptionFile) : Plugin{
+     private fun loadPlugin(file: File, desc: PluginDescriptionFile) : Plugin{
         if (!file.exists()) {
             throw PluginFileMissingException(file)
         }
+         val langScanner = LanguageScanner.createScanner(file, desc)
+         if(!langScanner.isKotlinPlugin()) {
+             return default.loadPlugin(file)
+         }
         val parent = file.parentFile
         val dataFolder = File(parent, desc.name)
         server.unsafe.checkSupported(desc)
@@ -94,8 +140,13 @@ class KotlinPluginLoader(
 
     }
 
-    fun getClass(name: String) : Class<*>? {
+    fun getClass(name: String, skipHcm: Boolean) : Class<*>? {
         var cached = classes[name]
+        if(!skipHcm) {
+            if (cached == null) {
+                cached = hackedClassMap.getSuper(name) // see if the javapluginloader has our class
+            }
+        }
         if(cached == null) {
             for (loader in loaders) {
                 try {
@@ -110,6 +161,7 @@ class KotlinPluginLoader(
         return cached
     }
 
+    fun getClass(name: String)  = getClass(name, false)
     fun registerClass(name: String, clz: Class<*>) {
         if (!classes.containsKey(name)) {
             classes[name] = clz

@@ -17,19 +17,21 @@ import java.net.URLConnection
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.logging.Level
-import java.util.logging.Logger
 
 
-class KotlinPlugin : PluginBase() {
+abstract class KotlinPlugin : PluginBase() {
 
 
     fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, pluginDescriptionFile: PluginDescriptionFile, server: Server) {
+        this._pluginDescriptionFile = pluginDescriptionFile
         this._file = file
         this._dataFolder = dataFolder
         this._loader = loader
         this._pluginLoader = pluginLoader
-        this._pluginDescriptionFile = pluginDescriptionFile
         this._server = server
+        this._configFile = File(dataFolder, "config.yml")
+        this._config = reloadConfig0()
+        this._logger = PluginLogger(this)
     }
 
     private lateinit var _pluginDescriptionFile: PluginDescriptionFile
@@ -40,15 +42,11 @@ class KotlinPlugin : PluginBase() {
     private lateinit var _loader: KotlinPluginClassLoader
     private lateinit var _pluginLoader: KotlinPluginLoader
     private lateinit var _server: Server
+    private lateinit var _configFile: File
+    private lateinit var _config: FileConfiguration
+    private lateinit var _logger: PluginLogger
 
-    val configFile by lazy {
-        File(dataFolder, "config.yml")
-    }
-    var _config = reloadConfig0()
-
-    val _logger = PluginLogger(this)
-
-    var enabled
+    var enabled : Boolean
         set(value) {
             if (_enabled != value) {
                 _enabled = value
@@ -61,17 +59,22 @@ class KotlinPlugin : PluginBase() {
         }
         get() = _enabled
 
+
+
     override fun onLoad() {}
-    override fun setNaggable(canNag: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun onEnable() {}
-    override fun isEnabled(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onDisable() {}
+
+
+    override fun isEnabled() = enabled
+
+    override fun getLogger() =_logger
+
+
+    override fun setNaggable(canNag: Boolean) {
+        _naggable = canNag
     }
 
-    override fun onDisable() {}
 
     override fun getDataFolder() = _dataFolder
 
@@ -81,11 +84,10 @@ class KotlinPlugin : PluginBase() {
 
     override fun getDescription() = _pluginDescriptionFile
     override fun getServer() = _server
+
     override fun saveDefaultConfig() {
-        try {
-            config.save(configFile)
-        } catch (e: IOException) {
-            logger.log(Level.SEVERE, "Could not save config to " + configFile, e)
+        if (!_configFile.exists()) {
+            saveResource("config.yml", false)
         }
     }
 
@@ -95,7 +97,7 @@ class KotlinPlugin : PluginBase() {
     }
 
     private fun reloadConfig0(): FileConfiguration {
-        _config = YamlConfiguration.loadConfiguration(configFile)
+        _config = YamlConfiguration.loadConfiguration(_configFile)
         val defConfigStream = getResource("config.yml") ?: return config
         config.setDefaults(YamlConfiguration.loadConfiguration(InputStreamReader(defConfigStream, StandardCharsets.UTF_8)))
         return config
@@ -103,9 +105,9 @@ class KotlinPlugin : PluginBase() {
 
     override fun saveConfig() {
         try {
-            getConfig().save(configFile)
+            config.save(_configFile)
         } catch (e: IOException) {
-            logger.log(Level.SEVERE, "Could not save config to " + configFile, e)
+            logger.log(Level.SEVERE, "Could not save config to $_configFile", e)
         }
     }
 
@@ -168,9 +170,4 @@ class KotlinPlugin : PluginBase() {
         }
 
     }
-
-    override fun getLogger(): Logger {
-        return logger
-    }
-
 }

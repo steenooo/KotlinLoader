@@ -15,6 +15,8 @@ open class KotlinPluginException : Exception {
 
     constructor(msg: String, throwable: Throwable) : super(msg, throwable)
 }
+
+class InjectException(msg: String) : KotlinPluginException(msg)
 class PluginNotKotlinPluginException(plugin: Plugin) : KotlinPluginException("${plugin.name} is not a Kotlin Plugin.")
 class PluginFileMissingException(file: File) : KotlinPluginException("Unable to find ${file.path}")
 

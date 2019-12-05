@@ -1,11 +1,11 @@
 package dev.steyn.kotlinloader.loader
 
 import com.google.common.io.ByteStreams
-import dev.steyn.kotlinloader.KotlinLoaderPlugin
+import dev.steyn.kotlinloader.KotlinLoader
 import dev.steyn.kotlinloader.api.KotlinPlugin
 import dev.steyn.kotlinloader.exception.InvalidPluginException
+import org.bukkit.Bukkit
 import org.bukkit.plugin.PluginDescriptionFile
-import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
 import java.lang.Exception
 import java.net.URL
@@ -19,7 +19,7 @@ class KotlinPluginClassLoader(
         val pluginLoader: KotlinPluginLoader,
         val file: File,
         val folder: File,
-        parent: ClassLoader = KotlinLoaderPlugin.instance.javaClass.classLoader,
+        parent: ClassLoader = KotlinLoader::class.java.classLoader,
         val desc: PluginDescriptionFile,
         private val jar: JarFile,
         private val manifest: Manifest? = jar.manifest,
@@ -47,13 +47,12 @@ class KotlinPluginClassLoader(
                     throw InvalidPluginException("Unable to find a public constructor", ex)
                 } catch (ex: InstantiationException) {
                     throw InvalidPluginException("Unable to instantiate ${desc.main}", ex)
-                }
+            }
             }
 
     init {
         plugin.init(file, folder, this, pluginLoader, desc, pluginLoader.server)
     }
-
 
     public override fun findClass(name: String): Class<*> {
         if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {

@@ -1,6 +1,6 @@
-package dev.steyn.kotlinloader
+package dev.steyn.kotlinloader.spigot
 
-import dev.steyn.kotlinloader.loader.KotlinPluginLoader
+import dev.steyn.kotlinloader.spigot.loader.KotlinPluginLoader
 import org.bukkit.Bukkit
 import org.bukkit.plugin.SimplePluginManager
 import org.bukkit.plugin.java.JavaPlugin

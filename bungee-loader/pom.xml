@@ -9,13 +9,22 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>spigot-loader</artifactId>
-
+  <properties>
+    <bungee.version>1.14-SNAPSHOT</bungee.version>
+  </properties>
+  <artifactId>bungee-loader</artifactId>
+  <repositories>
+    <repository>
+      <id>bungeecord-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
-      <version>1.14.4-R0.1-SNAPSHOT</version>
+      <groupId>net.md-5</groupId>
+      <artifactId>bungeecord-api</artifactId>
+      <version>${bungee.version}</version>
+      <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -24,4 +33,5 @@
       <version>${parent.version}</version>
     </dependency>
   </dependencies>
+
 </project>

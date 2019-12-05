@@ -1,9 +1,9 @@
-package dev.steyn.kotlinloader.loader
+package dev.steyn.kotlinloader.spigot.loader
 
 import com.google.common.io.ByteStreams
-import dev.steyn.kotlinloader.KotlinLoader
-import dev.steyn.kotlinloader.api.KotlinPlugin
-import dev.steyn.kotlinloader.exception.InvalidPluginException
+import dev.steyn.kotlinloader.spigot.KotlinLoader
+import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
+import dev.steyn.kotlinloader.spigot.exception.InvalidPluginException
 import org.bukkit.Bukkit
 import org.bukkit.plugin.PluginDescriptionFile
 import java.io.File

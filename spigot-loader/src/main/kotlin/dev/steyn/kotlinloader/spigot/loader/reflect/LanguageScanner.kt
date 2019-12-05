@@ -1,5 +1,6 @@
-package dev.steyn.kotlinloader.loader.reflect
+package dev.steyn.kotlinloader.spigot.loader.reflect
 
+import dev.steyn.kotlinloader.common.readClass
 import org.bukkit.plugin.PluginDescriptionFile
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES

@@ -1,7 +1,7 @@
-package dev.steyn.kotlinloader.api
+package dev.steyn.kotlinloader.spigot.api
 
-import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
-import dev.steyn.kotlinloader.loader.KotlinPluginLoader
+import dev.steyn.kotlinloader.spigot.loader.KotlinPluginClassLoader
+import dev.steyn.kotlinloader.spigot.loader.KotlinPluginLoader
 import org.bukkit.Server
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

@@ -1,6 +1,6 @@
-package dev.steyn.kotlinloader.loader.reflect
+package dev.steyn.kotlinloader.spigot.loader.reflect
 
-import dev.steyn.kotlinloader.loader.KotlinPluginLoader
+import dev.steyn.kotlinloader.spigot.loader.KotlinPluginLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 

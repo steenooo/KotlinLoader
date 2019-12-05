@@ -9,19 +9,15 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>spigot-loader</artifactId>
+  <artifactId>loader-common</artifactId>
+
 
   <dependencies>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
-      <version>1.14.4-R0.1-SNAPSHOT</version>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>28.1-jre</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>dev.steyn</groupId>
-      <artifactId>loader-common</artifactId>
-      <version>${parent.version}</version>
     </dependency>
   </dependencies>
 </project>

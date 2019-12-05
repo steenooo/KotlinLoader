@@ -1,12 +1,12 @@
-package dev.steyn.kotlinloader.loader
+package dev.steyn.kotlinloader.spigot.loader
 
-import dev.steyn.kotlinloader.api.KotlinPlugin
-import dev.steyn.kotlinloader.exception.InjectException
-import dev.steyn.kotlinloader.exception.PluginFileMissingException
-import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
-import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
-import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
-import dev.steyn.kotlinloader.loader.reflect.makeMutable
+import dev.steyn.kotlinloader.common.makeMutable
+import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
+import dev.steyn.kotlinloader.spigot.exception.InjectException
+import dev.steyn.kotlinloader.spigot.exception.PluginFileMissingException
+import dev.steyn.kotlinloader.spigot.exception.PluginNotKotlinPluginException
+import dev.steyn.kotlinloader.spigot.loader.reflect.HackedClassMap
+import dev.steyn.kotlinloader.spigot.loader.reflect.LanguageScanner
 import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.configuration.serialization.ConfigurationSerializable

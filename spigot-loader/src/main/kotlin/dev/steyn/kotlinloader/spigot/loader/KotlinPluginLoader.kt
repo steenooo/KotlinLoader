@@ -1,6 +1,7 @@
 package dev.steyn.kotlinloader.spigot.loader
 
 import dev.steyn.kotlinloader.common.makeMutable
+import dev.steyn.kotlinloader.spigot.api.ClassHandler
 import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
 import dev.steyn.kotlinloader.spigot.exception.InjectException
 import dev.steyn.kotlinloader.spigot.exception.PluginFileMissingException
@@ -30,6 +31,7 @@ class KotlinPluginLoader(
     private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
     private  val hackedClassMap: HackedClassMap
     private  val default: JavaPluginLoader
+    val transformers = listOf<ClassHandler>()
     
     init {
         val manager = Bukkit.getPluginManager()

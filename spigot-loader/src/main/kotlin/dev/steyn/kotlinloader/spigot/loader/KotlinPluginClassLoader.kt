@@ -6,6 +6,7 @@ import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
 import dev.steyn.kotlinloader.spigot.exception.InvalidPluginException
 import org.bukkit.Bukkit
 import org.bukkit.plugin.PluginDescriptionFile
+import org.objectweb.asm.ClassReader
 import java.io.File
 import java.lang.Exception
 import java.net.URL
@@ -83,6 +84,7 @@ class KotlinPluginClassLoader(
                     ByteStreams.toByteArray(it)
                 }
                 bytes = pluginLoader.server.unsafe.processClass(desc, path, bytes)
+
                 val dot = name.lastIndexOf('.')
                 if (dot != -1) {
                     val pkgName = name.substring(0, dot)

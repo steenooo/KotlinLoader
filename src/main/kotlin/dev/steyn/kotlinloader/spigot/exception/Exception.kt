@@ -1,6 +1,5 @@
 package dev.steyn.kotlinloader.spigot.exception
 
-import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
 import org.bukkit.plugin.Plugin
 import java.io.File
 

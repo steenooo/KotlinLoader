@@ -1,7 +1,6 @@
 package dev.steyn.kotlinloader.spigot.loader
 
 import dev.steyn.kotlinloader.common.makeMutable
-import dev.steyn.kotlinloader.spigot.api.ClassHandler
 import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
 import dev.steyn.kotlinloader.spigot.exception.InjectException
 import dev.steyn.kotlinloader.spigot.exception.PluginFileMissingException

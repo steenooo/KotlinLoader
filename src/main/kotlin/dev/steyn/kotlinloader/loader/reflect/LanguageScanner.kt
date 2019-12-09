@@ -1,7 +1,6 @@
-package dev.steyn.kotlinloader.spigot.loader.reflect
+package dev.steyn.kotlinloader.loader.reflect
 
-import dev.steyn.kotlinloader.common.readClass
-import org.bukkit.plugin.PluginDescriptionFile
+import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES
 import org.objectweb.asm.ClassVisitor
@@ -17,13 +16,13 @@ class LanguageScanner(val data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
         private val ASM_API_VERSION: Int = Opcodes.ASM7
 
 
-        fun createScanner(file: File, descriptionFile: PluginDescriptionFile) : LanguageScanner {
+        fun createScanner(file: File, descriptionFile: KotlinPluginDescription): LanguageScanner {
             return JarFile(file).use { LanguageScanner(it.readClass(descriptionFile.main)) }
         }
 
     }
 
-    fun isKotlinPlugin() : Boolean {
+    fun isKotlinPlugin(): Boolean {
         val reader = ClassReader(data)
         reader.accept(this, EXPAND_FRAMES)
         val superClass = reader.superName

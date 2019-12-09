@@ -1,10 +1,10 @@
-package dev.steyn.kotlinloader.spigot.loader
+package dev.steyn.kotlinloader.loader
 
 import com.google.common.io.ByteStreams
-import dev.steyn.kotlinloader.spigot.KotlinLoader
-import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
-import dev.steyn.kotlinloader.spigot.exception.InvalidPluginException
-import org.bukkit.plugin.PluginDescriptionFile
+import dev.steyn.kotlinloader.KotlinLoader
+import dev.steyn.kotlinloader.api.KotlinPlugin
+import dev.steyn.kotlinloader.desc.KotlinPluginDescription
+import dev.steyn.kotlinloader.exception.InvalidPluginException
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -18,7 +18,7 @@ class KotlinPluginClassLoader(
         val file: File,
         val folder: File,
         parent: ClassLoader = KotlinLoader::class.java.classLoader,
-        val desc: PluginDescriptionFile,
+        val desc: KotlinPluginDescription,
         private val jar: JarFile,
         private val manifest: Manifest? = jar.manifest,
         val classes: MutableMap<String, Class<*>> = ConcurrentHashMap(),
@@ -45,7 +45,7 @@ class KotlinPluginClassLoader(
                     throw InvalidPluginException("Unable to find a public constructor", ex)
                 } catch (ex: InstantiationException) {
                     throw InvalidPluginException("Unable to instantiate ${desc.main}", ex)
-            }
+                }
             }
 
     init {
@@ -54,7 +54,7 @@ class KotlinPluginClassLoader(
 
     public override fun findClass(name: String): Class<*> {
         if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {
-            this.plugin.logger.warning("Tried to find a class that should not be searched after by us $name")
+            this.plugin.logger.warning("Tried to find a class that should not be resolved by us $name")
             throw ClassNotFoundException(name)
         }
         return findClass(name, true) ?: throw ClassNotFoundException(name)
@@ -64,8 +64,9 @@ class KotlinPluginClassLoader(
         fun byLocal(name: String): Class<*>? = classes[name]
         fun byGlobal(name: String): Class<*>? = pluginLoader.getClass(name)
         fun byParent() = super.findClass(name)
-        val result =  byLocal(name) ?: (if (global) byGlobal(name) else null) ?: byJar(name) ?: byParent()
-        if(result != null) {
+        val result = byLocal(name) ?: (if (global) byGlobal(name) else null) ?: byJar(name)
+        ?: byParent()
+        if (result != null) {
             pluginLoader.registerClass(name, result)
         }
         classes[name] = result
@@ -80,7 +81,7 @@ class KotlinPluginClassLoader(
                 var bytes = jar.getInputStream(entry).use {
                     ByteStreams.toByteArray(it)
                 }
-                bytes = pluginLoader.server.unsafe.processClass(desc, path, bytes)
+                bytes = pluginLoader.server.unsafe.processClass(desc.bukkit, path, bytes)
 
                 val dot = name.lastIndexOf('.')
                 if (dot != -1) {
@@ -102,7 +103,7 @@ class KotlinPluginClassLoader(
                 return defineClass(name, bytes, 0, bytes.size, source)
             }
             return null
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             throw e
         }
     }

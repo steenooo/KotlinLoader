@@ -1,7 +1,8 @@
-package dev.steyn.kotlinloader.spigot.api
+package dev.steyn.kotlinloader.api
 
-import dev.steyn.kotlinloader.spigot.loader.KotlinPluginClassLoader
-import dev.steyn.kotlinloader.spigot.loader.KotlinPluginLoader
+import dev.steyn.kotlinloader.desc.KotlinPluginDescription
+import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
+import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -9,7 +10,6 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.PluginBase
-import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLogger
 import java.io.*
 import java.net.URL
@@ -22,8 +22,8 @@ import java.util.logging.Level
 abstract class KotlinPlugin : PluginBase() {
 
 
-    fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, pluginDescriptionFile: PluginDescriptionFile, server: Server) {
-        this._pluginDescriptionFile = pluginDescriptionFile
+    fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
+        this._pluginDescriptionFile = desc
         this._file = file
         this._dataFolder = dataFolder
         this._loader = loader
@@ -34,7 +34,7 @@ abstract class KotlinPlugin : PluginBase() {
         this._logger = PluginLogger(this)
     }
 
-    private lateinit var _pluginDescriptionFile: PluginDescriptionFile
+    private lateinit var _pluginDescriptionFile: KotlinPluginDescription
     private lateinit var _file: File
     private lateinit var _dataFolder: File
     private var _enabled: Boolean = false
@@ -46,7 +46,7 @@ abstract class KotlinPlugin : PluginBase() {
     private lateinit var _config: FileConfiguration
     private lateinit var _logger: PluginLogger
 
-    var enabled : Boolean
+    var enabled: Boolean
         set(value) {
             if (_enabled != value) {
                 _enabled = value
@@ -60,7 +60,6 @@ abstract class KotlinPlugin : PluginBase() {
         get() = _enabled
 
 
-
     override fun onLoad() {}
     override fun onEnable() {}
     override fun onDisable() {}
@@ -68,7 +67,7 @@ abstract class KotlinPlugin : PluginBase() {
 
     override fun isEnabled() = enabled
 
-    override fun getLogger() =_logger
+    override fun getLogger() = _logger
 
 
     override fun setNaggable(canNag: Boolean) {
@@ -82,7 +81,9 @@ abstract class KotlinPlugin : PluginBase() {
     override fun getConfig() = _config
     override fun getPluginLoader() = _pluginLoader
 
-    override fun getDescription() = _pluginDescriptionFile
+    override fun getDescription() = _pluginDescriptionFile.bukkit
+
+
     override fun getServer() = _server
 
     override fun saveDefaultConfig() {

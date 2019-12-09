@@ -24,10 +24,28 @@
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-reflect</artifactId>
-      <version>1.3.61</version>
+      <version>${kotlin.version}</version>
     </dependency>
     <dependency>
-      <artifactId>spigot-api</artifactId>
+      <artifactId>kotlin-script-runtime</artifactId>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>kotlin-script-util</artifactId>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <version>${kotlin.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>kotlin-compiler-embeddable</artifactId>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <scope>runtime</scope>
+      <version>${kotlin.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>spigot</artifactId>
       <groupId>org.spigotmc</groupId>
       <scope>provided</scope>
       <version>1.14.4-R0.1-SNAPSHOT</version>

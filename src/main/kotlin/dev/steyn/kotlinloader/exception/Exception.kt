@@ -1,4 +1,4 @@
-package dev.steyn.kotlinloader.spigot.exception
+package dev.steyn.kotlinloader.exception
 
 import org.bukkit.plugin.Plugin
 import java.io.File

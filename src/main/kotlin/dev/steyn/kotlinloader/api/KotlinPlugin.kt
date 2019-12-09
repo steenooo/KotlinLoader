@@ -1,7 +1,6 @@
 package dev.steyn.kotlinloader.api
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
-import dev.steyn.kotlinloader.exception.KotlinPluginException
 import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
@@ -32,14 +31,6 @@ abstract class KotlinPlugin : PluginBase() {
         @JvmStatic
         fun <T : KotlinPlugin> getPlugin(clazz: Class<T>): T {
             return (clazz.classLoader as KotlinPluginClassLoader).plugin as T
-        }
-    }
-
-
-    init {
-        val loader = javaClass.classLoader
-        if (loader !is KotlinPluginClassLoader) {
-            throw KotlinPluginException("Invalid classloader.")
         }
     }
 

@@ -8,11 +8,6 @@
   <artifactId>kotlin-loader</artifactId>
   <packaging>pom</packaging>
   <version>1.0.0</version>
-  <modules>
-    <module>spigot-loader</module>
-    <module>bungee-loader</module>
-    <module>loader-common</module>
-  </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <kotlin.version>1.3.61</kotlin.version>
@@ -30,6 +25,12 @@
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-reflect</artifactId>
       <version>1.3.61</version>
+    </dependency>
+    <dependency>
+      <artifactId>spigot-api</artifactId>
+      <groupId>org.spigotmc</groupId>
+      <scope>provided</scope>
+      <version>1.14.4-R0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>

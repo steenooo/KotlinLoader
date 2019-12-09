@@ -4,11 +4,8 @@ import com.google.common.io.ByteStreams
 import dev.steyn.kotlinloader.spigot.KotlinLoader
 import dev.steyn.kotlinloader.spigot.api.KotlinPlugin
 import dev.steyn.kotlinloader.spigot.exception.InvalidPluginException
-import org.bukkit.Bukkit
 import org.bukkit.plugin.PluginDescriptionFile
-import org.objectweb.asm.ClassReader
 import java.io.File
-import java.lang.Exception
 import java.net.URL
 import java.net.URLClassLoader
 import java.security.CodeSource

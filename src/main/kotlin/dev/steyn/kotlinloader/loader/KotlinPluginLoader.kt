@@ -2,8 +2,12 @@ package dev.steyn.kotlinloader.loader
 
 import dev.steyn.kotlinloader.api.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
+import dev.steyn.kotlinloader.desc.asKotlin
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
+import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
+import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
+import org.bukkit.Server
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.event.Event
@@ -18,16 +22,30 @@ import java.util.jar.JarFile
 import java.util.logging.Level
 import java.util.regex.Pattern
 
-class KotlinPluginLoader : PluginLoader {
+class KotlinPluginLoader(
+        val server: Server
+) : PluginLoader {
 
     private val loaders: MutableList<KotlinPluginClassLoader> = CopyOnWriteArrayList<KotlinPluginClassLoader>()
     private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
+
+
+    init {
+        KotlinInjector.hackedMap = HackedClassMap(KotlinInjector.javaMapField, this)
+        KotlinInjector.javaMapField = KotlinInjector.hackedMap
+    }
+
 
     override fun loadPlugin(file: File): Plugin {
         if (!file.exists()) {
             throw PluginFileMissingException(file)
         }
-        return loadPlugin(file, getPluginDescription(file))
+        val desc = getPluginDescription(file).asKotlin()
+        val scanner = LanguageScanner.createScanner(file, desc)
+        if (scanner.extendsKotlinPlugin()) {
+            return this.loadPlugin(file, desc)
+        }
+        return KotlinInjector.loader.loadPlugin(file)
     }
 
 
@@ -48,7 +66,7 @@ class KotlinPluginLoader : PluginLoader {
         if (!plugin.enabled) {
             return
         }
-        plugin.logger.info("Disabling ${plugin.description.name}")
+        plugin.logger.info("Disabling ${plugin.description.name}..")
 
         val loader = plugin.javaClass.classLoader
         if (loader is KotlinPluginClassLoader) {
@@ -92,7 +110,7 @@ class KotlinPluginLoader : PluginLoader {
         var cached = classes[name]
         if (!skipHcm) {
             if (cached == null) {
-                cached = hackedClassMap.getSuper(name) // see if the javapluginloader has our class
+                cached = KotlinInjector.hackedMap.getSuper(name) // see if the javapluginloader has our class
             }
         }
         if (cached == null) {
@@ -132,10 +150,10 @@ class KotlinPluginLoader : PluginLoader {
 
 
     override fun createRegisteredListeners(listener: Listener, plugin: Plugin): MutableMap<Class<out Event>, MutableSet<RegisteredListener>> =
-            default.createRegisteredListeners(listener
+            KotlinInjector.loader.createRegisteredListeners(listener
                     , plugin)
 
-    override fun getPluginFileFilters(): Array<Pattern> = default.pluginFileFilters
+    override fun getPluginFileFilters(): Array<Pattern> = KotlinInjector.loader.pluginFileFilters
 
-    override fun getPluginDescription(file: File) = default.getPluginDescription(file)
+    override fun getPluginDescription(file: File) = KotlinInjector.loader.getPluginDescription(file)
 }

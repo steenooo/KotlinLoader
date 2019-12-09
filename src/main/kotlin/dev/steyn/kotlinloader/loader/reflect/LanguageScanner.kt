@@ -22,7 +22,7 @@ class LanguageScanner(val data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
 
     }
 
-    fun isKotlinPlugin(): Boolean {
+    fun extendsKotlinPlugin(): Boolean {
         val reader = ClassReader(data)
         reader.accept(this, EXPAND_FRAMES)
         val superClass = reader.superName

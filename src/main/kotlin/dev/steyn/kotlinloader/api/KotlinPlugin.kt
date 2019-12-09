@@ -1,6 +1,7 @@
 package dev.steyn.kotlinloader.api
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
+import dev.steyn.kotlinloader.exception.KotlinPluginException
 import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
@@ -17,9 +18,30 @@ import java.net.URLConnection
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.logging.Level
+import kotlin.reflect.KClass
 
 
 abstract class KotlinPlugin : PluginBase() {
+
+    companion object {
+        @JvmStatic
+        fun <T : KotlinPlugin> getPlugin(clazz: KClass<T>): T {
+            return clazz.objectInstance ?: getPlugin(clazz.java)
+        }
+
+        @JvmStatic
+        fun <T : KotlinPlugin> getPlugin(clazz: Class<T>): T {
+            return (clazz.classLoader as KotlinPluginClassLoader).plugin as T
+        }
+    }
+
+
+    init {
+        val loader = javaClass.classLoader
+        if (loader !is KotlinPluginClassLoader) {
+            throw KotlinPluginException("Invalid classloader.")
+        }
+    }
 
 
     fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {

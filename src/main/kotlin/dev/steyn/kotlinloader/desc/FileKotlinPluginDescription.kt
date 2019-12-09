@@ -41,3 +41,6 @@ class FileKotlinPluginDescription(val file: PluginDescriptionFile) : KotlinPlugi
     override val bukkit: PluginDescriptionFile
         get() = file
 }
+
+
+fun PluginDescriptionFile.asKotlin() = FileKotlinPluginDescription(this)

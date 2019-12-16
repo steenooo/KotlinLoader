@@ -7,7 +7,7 @@ import org.bukkit.plugin.PluginAwareness
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLoadOrder
 
-class FileKotlinPluginDescription(val file: PluginDescriptionFile) : KotlinPluginDescription {
+class FileKotlinPluginDescription(private val file: PluginDescriptionFile) : KotlinPluginDescription {
 
     override val main: String
         get() = file.main

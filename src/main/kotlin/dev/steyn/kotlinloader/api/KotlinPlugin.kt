@@ -20,7 +20,7 @@ import java.util.logging.Level
 import kotlin.reflect.KClass
 
 
-abstract class KotlinPlugin : PluginBase() {
+abstract class KotlinPlugin : PluginBase {
 
     companion object {
         @JvmStatic
@@ -29,11 +29,16 @@ abstract class KotlinPlugin : PluginBase() {
         }
 
         @JvmStatic
-        fun <T : KotlinPlugin> getPlugin(clazz: Class<T>): T {
-            return (clazz.classLoader as KotlinPluginClassLoader).plugin as T
-        }
+        fun <T : KotlinPlugin> getPlugin(clazz: Class<T>) =
+                (clazz.classLoader as KotlinPluginClassLoader).plugin as T
     }
 
+
+    constructor() : super() {
+        if (this::class.java.classLoader !is KotlinPluginClassLoader) {
+            throw Error("We should be loaded by a KotinPluginClassLoader!")
+        }
+    }
 
     fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
         this._pluginDescriptionFile = desc
@@ -91,6 +96,7 @@ abstract class KotlinPlugin : PluginBase() {
     override fun getDataFolder() = _dataFolder
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) = false
+
     override fun getConfig() = _config
     override fun getPluginLoader() = _pluginLoader
 

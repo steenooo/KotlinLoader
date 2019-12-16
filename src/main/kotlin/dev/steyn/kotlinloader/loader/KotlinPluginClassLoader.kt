@@ -5,6 +5,7 @@ import dev.steyn.kotlinloader.KotlinLoader
 import dev.steyn.kotlinloader.api.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.InvalidPluginException
+import dev.steyn.kotlinloader.exception.ProtectedClassException
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -29,10 +30,17 @@ class KotlinPluginClassLoader(
         init {
             ClassLoader.registerAsParallelCapable()
         }
+
+        val PROTECTED = arrayOf(
+                "org.bukkit.",
+                "net.minecraft."
+        )
     }
+
 
     val plugin =
             try {
+                @Suppress("UNCHECKED_CAST")
                 Class.forName(desc.main, true, this) as Class<out KotlinPlugin>
             } catch (ex: ClassNotFoundException) {
                 throw InvalidPluginException("Unable to find main class", ex)
@@ -53,9 +61,10 @@ class KotlinPluginClassLoader(
     }
 
     public override fun findClass(name: String): Class<*> {
-        if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {
-            this.plugin.logger.warning("Tried to find a class that should not be resolved by us $name")
-            throw ClassNotFoundException(name)
+        for (x in PROTECTED) {
+            if (name.startsWith(x)) {
+                throw ProtectedClassException(name)
+            }
         }
         return findClass(name, true) ?: throw ClassNotFoundException(name)
     }

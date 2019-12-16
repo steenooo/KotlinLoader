@@ -15,6 +15,7 @@ open class KotlinPluginException : Exception {
     constructor(msg: String, throwable: Throwable) : super(msg, throwable)
 }
 
+class IllegalLoaderException : KotlinPluginException("Classloader must be a KotlinPluginClassLoader.")
 class InjectException(msg: String) : KotlinPluginException(msg)
 class PluginNotKotlinPluginException(plugin: Plugin) : KotlinPluginException("${plugin.name} is not a Kotlin Plugin.")
 class PluginFileMissingException(file: File) : KotlinPluginException("Unable to find ${file.path}")
@@ -28,3 +29,5 @@ class InvalidPluginException : Exception {
 
     constructor(msg: String, throwable: Throwable) : super(msg, throwable)
 }
+
+class ProtectedClassException(e: String) : ClassNotFoundException(e)

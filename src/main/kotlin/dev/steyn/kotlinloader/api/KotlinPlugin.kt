@@ -1,6 +1,7 @@
 package dev.steyn.kotlinloader.api
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
+import dev.steyn.kotlinloader.exception.IllegalLoaderException
 import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
@@ -16,15 +17,20 @@ import java.net.URL
 import java.net.URLConnection
 import java.nio.charset.StandardCharsets
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import kotlin.reflect.KClass
 
 
 abstract class KotlinPlugin : PluginBase {
 
+
     companion object {
+        //Keep count of the amount of plugins we manage.
+        val COUNT = AtomicInteger()
+
         @JvmStatic
-        fun <T : KotlinPlugin> getPlugin(clazz: KClass<T>): T {
+        inline fun <T : KotlinPlugin> getPlugin(clazz: KClass<T>): T {
             return clazz.objectInstance ?: getPlugin(clazz.java)
         }
 
@@ -33,11 +39,11 @@ abstract class KotlinPlugin : PluginBase {
                 (clazz.classLoader as KotlinPluginClassLoader).plugin as T
     }
 
-
     constructor() : super() {
         if (this::class.java.classLoader !is KotlinPluginClassLoader) {
-            throw Error("We should be loaded by a KotinPluginClassLoader!")
+            throw IllegalLoaderException()
         }
+        COUNT.incrementAndGet()
     }
 
     fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {

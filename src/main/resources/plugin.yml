@@ -3,3 +3,9 @@ main: dev.steyn.kotlinloader.KotlinLoader
 version: ${project.version}
 api-version: 1.13
 load: STARTUP
+commands:
+  kotlinloader:
+    aliases: [kotlin, kotlinl, kl]
+    description: Kotlin Loader Plugin Information
+    permission: kotlinloader.info
+    usage: /kotlinloader

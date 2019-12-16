@@ -1,4 +1,4 @@
-package dev.steyn.kotlinloader
+package dev.steyn.kotlinloader.plugin
 
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Bukkit
@@ -19,7 +19,6 @@ class KotlinLoader : JavaPlugin() {
         if (manager !is SimplePluginManager) {
             throw Exception("Invalid PluginManager type")
         }
-        getCommand("kotlinloader")?.setExecutor(KotlinCommand())
         manager.registerInterface(KotlinPluginLoader::class.java)
         val pluginsFolder = File(dataFolder.parent, "kotlin")
         if (!pluginsFolder.exists()) {
@@ -38,5 +37,9 @@ class KotlinLoader : JavaPlugin() {
             }
         }
         logger.info("Loaded Kotlin Plugins..")
+    }
+
+    override fun onEnable() {
+        getCommand("kotlinloader")!!.setExecutor(KotlinCommand())
     }
 }

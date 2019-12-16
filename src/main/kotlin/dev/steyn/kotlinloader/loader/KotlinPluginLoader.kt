@@ -1,6 +1,6 @@
 package dev.steyn.kotlinloader.loader
 
-import dev.steyn.kotlinloader.api.KotlinPlugin
+import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.desc.asKotlin
 import dev.steyn.kotlinloader.exception.PluginFileMissingException

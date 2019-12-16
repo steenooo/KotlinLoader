@@ -1,8 +1,9 @@
 name: KotlinLoader
-main: dev.steyn.kotlinloader.KotlinLoader
+main: dev.steyn.kotlinloader.plugin.KotlinLoader
 version: ${project.version}
 api-version: 1.13
 load: STARTUP
+
 commands:
   kotlinloader:
     aliases: [kotlin, kotlinl, kl]

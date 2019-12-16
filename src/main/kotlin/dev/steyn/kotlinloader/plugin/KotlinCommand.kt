@@ -1,11 +1,10 @@
-package dev.steyn.kotlinloader
+package dev.steyn.kotlinloader.plugin
 
-import dev.steyn.kotlinloader.api.KotlinPlugin
-import org.bukkit.Color.*
+import dev.steyn.kotlinloader.KotlinPlugin
+import org.bukkit.ChatColor.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import java.awt.font.TextAttribute.STRIKETHROUGH
 
 class KotlinCommand : CommandExecutor {
 
@@ -19,7 +18,6 @@ class KotlinCommand : CommandExecutor {
         sender.sendMessage("${GRAY}Kotlin Version: ${KotlinVersion.CURRENT}")
         sender.sendMessage("${GRAY}Plugins: ${AQUA}${KotlinPlugin.COUNT.get()}")
         sender.sendMessage(LINE)
-
-        return true;
+        return true
     }
 }

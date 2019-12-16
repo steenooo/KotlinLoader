@@ -25,12 +25,12 @@ fun Field.makeMutable(): Boolean {
 }
 
 
-fun JarFile.getClass(name: String): JarEntry {
+private fun JarFile.getClass(name: String): JarEntry {
     val entryName = name.replace('.', '/') + ".class"
     return getJarEntry(entryName)
 }
 
-fun JarFile.readClass(name: String) = this.getInputStream(getClass(name)).use {
+internal fun JarFile.readClass(name: String) = this.getInputStream(getClass(name)).use {
     ByteStreams.toByteArray(it)
 }
 

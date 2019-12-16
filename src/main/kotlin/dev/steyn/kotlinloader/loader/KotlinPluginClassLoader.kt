@@ -1,11 +1,11 @@
 package dev.steyn.kotlinloader.loader
 
 import com.google.common.io.ByteStreams
-import dev.steyn.kotlinloader.KotlinLoader
-import dev.steyn.kotlinloader.api.KotlinPlugin
+import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.ProtectedClassException
+import dev.steyn.kotlinloader.plugin.KotlinLoader
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader

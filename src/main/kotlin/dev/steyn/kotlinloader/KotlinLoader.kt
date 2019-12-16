@@ -19,6 +19,7 @@ class KotlinLoader : JavaPlugin() {
         if (manager !is SimplePluginManager) {
             throw Exception("Invalid PluginManager type")
         }
+        getCommand("kotlinloader")?.setExecutor(KotlinCommand())
         manager.registerInterface(KotlinPluginLoader::class.java)
         val pluginsFolder = File(dataFolder.parent, "kotlin")
         if (!pluginsFolder.exists()) {

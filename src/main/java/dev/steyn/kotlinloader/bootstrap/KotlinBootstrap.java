@@ -11,8 +11,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class KotlinBootstrap {
@@ -53,16 +51,18 @@ public class KotlinBootstrap {
 
     }
 
-    private final void addFileToLoader(ClassLoader loader, File file) throws Exception {
+    private void addFileToLoader(ClassLoader loader, File file) throws Exception {
         Method m = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
         m.setAccessible(true);
         m.invoke(loader, file.toURI().toURL());
     }
 
 
-    @RequiredArgsConstructor
-    @Getter
     static class Repository {
+
+        public Repository(String url) {
+            this.url = url;
+        }
 
         private final String url;
 
@@ -90,10 +90,13 @@ public class KotlinBootstrap {
         }
     }
 
-    @RequiredArgsConstructor
-    @Getter
     static class MavenDependency {
 
+        public MavenDependency(String groupId, String artifactId, String version) {
+            this.groupId = groupId;
+            this.artifactId = artifactId;
+            this.version = version;
+        }
 
         private final String groupId;
         private final String artifactId;
@@ -102,9 +105,13 @@ public class KotlinBootstrap {
 
     }
 
-    @RequiredArgsConstructor
-    @Getter
     static class KotlinLibrary {
+
+        public KotlinLibrary(String name, String groupId, String artifactId) {
+            this.name = name;
+            this.groupId = groupId;
+            this.artifactId = artifactId;
+        }
 
         private final String name;
         private final String groupId;

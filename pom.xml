@@ -107,7 +107,6 @@
   </build>
 
   <dependencies>
-    <!-- We compile the Kotlin stdlib to provide it on runtime for the plugins to prevent jar bloating -->
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-jdk8</artifactId>
@@ -126,6 +125,7 @@
       <scope>provided</scope>
       <version>${kotlinx.coroutines.version}</version>
     </dependency>
+
     <dependency>
       <artifactId>spigot-api</artifactId>
       <groupId>org.spigotmc</groupId>
@@ -137,12 +137,6 @@
       <artifactId>asm</artifactId>
       <version>7.1</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <artifactId>lombok</artifactId>
-      <groupId>org.projectlombok</groupId>
-      <scope>provided</scope>
-      <version>1.18.10</version>
     </dependency>
   </dependencies>
 </project>

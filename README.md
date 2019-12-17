@@ -34,6 +34,7 @@ KotlinLoader provides a custom PluginLoader, that will provide the Kotlin librar
 #### Roadmap
 - Add support for .kts configuration
 - Add support for annotation based plugin descriptions
+- Add BungeeCord support
 
 #### Usage
 ##### In the spigot server

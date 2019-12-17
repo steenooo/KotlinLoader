@@ -30,7 +30,7 @@ public class KotlinBootstrap {
 
     }
 
-    public void prepare(KotlinLoaderPlugin plugin) {
+    public void init(KotlinLoaderPlugin plugin) {
         FileConfiguration config = plugin.getConfig();
         File libraries = new File(plugin.getDataFolder(), "libraries");
         if (!libraries.exists()) {
@@ -70,6 +70,8 @@ public class KotlinBootstrap {
             File file = new File(folder,
                 String.format("%s-%s.jar", dependency.artifactId, dependency.version));
             if (!file.exists()) {
+                KotlinLoaderPlugin.getInstance().getLogger()
+                    .info("Downloading " + dependency.toString() + "..");
                 try {
                     file.createNewFile();
                     URL url = new URL(String.format("%s%s/%s/%s/%s",
@@ -90,6 +92,7 @@ public class KotlinBootstrap {
         }
     }
 
+
     static class MavenDependency {
 
         public MavenDependency(String groupId, String artifactId, String version) {
@@ -102,7 +105,10 @@ public class KotlinBootstrap {
         private final String artifactId;
         private final String version;
 
-
+        @Override
+        public String toString() {
+            return String.format("%s:%s:%s", groupId, artifactId, version);
+        }
     }
 
     static class KotlinLibrary {

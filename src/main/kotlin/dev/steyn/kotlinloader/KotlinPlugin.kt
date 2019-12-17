@@ -22,7 +22,7 @@ import java.util.logging.Level
 import kotlin.reflect.KClass
 
 
-abstract class KotlinPlugin : PluginBase {
+abstract class KotlinPlugin : PluginBase() {
 
 
     companion object {
@@ -45,7 +45,7 @@ abstract class KotlinPlugin : PluginBase {
                 (clazz.classLoader as KotlinPluginClassLoader).plugin as T
     }
 
-    constructor() : super() {
+    init {
         if (this::class.java.classLoader !is KotlinPluginClassLoader) {
             throw IllegalLoaderException()
         }

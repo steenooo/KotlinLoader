@@ -16,7 +16,7 @@ public class KotlinLoaderPlugin extends JavaPlugin {
     public void onLoad() {
         saveDefaultConfig();
         KotlinBootstrap bootstrap = new KotlinBootstrap();
-        bootstrap.prepare(this);
+        bootstrap.init(this);
         KotlinLoader loader = new KotlinLoader(this);
         loader.load();
     }

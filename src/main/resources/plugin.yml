@@ -3,6 +3,7 @@ main: dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 version: ${project.version}
 api-version: 1.13
 load: STARTUP
+author: steenooo
 
 commands:
   kotlinloader:

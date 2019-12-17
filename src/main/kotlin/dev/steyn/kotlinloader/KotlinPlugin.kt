@@ -29,8 +29,14 @@ abstract class KotlinPlugin : PluginBase {
         //Keep count of the amount of plugins we manage.
         val COUNT = AtomicInteger()
 
+
         @JvmStatic
-        inline fun <T : KotlinPlugin> getPlugin(clazz: KClass<T>): T {
+        inline fun <reified T : KotlinPlugin> getPlugin(): T {
+            return getPlugin(T::class)
+        }
+
+        @JvmStatic
+        fun <T : KotlinPlugin> getPlugin(clazz: KClass<T>): T {
             return clazz.objectInstance ?: getPlugin(clazz.java)
         }
 

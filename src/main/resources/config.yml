@@ -1,0 +1,6 @@
+kotlin:
+  repository: https://repo1.maven.org/maven2/
+  library:
+    stdlib: ${kotlin.version}
+    coroutines: ${kotlinx.coroutines.version}
+    reflect: ${kotlin.version}

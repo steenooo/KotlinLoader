@@ -60,11 +60,11 @@ public class KotlinBootstrap {
 
     static class Repository {
 
+        private final String url;
+
         public Repository(String url) {
             this.url = url;
         }
-
-        private final String url;
 
         public File download(File folder, MavenDependency dependency) {
             File file = new File(folder,
@@ -95,15 +95,15 @@ public class KotlinBootstrap {
 
     static class MavenDependency {
 
+        private final String groupId;
+        private final String artifactId;
+        private final String version;
+
         public MavenDependency(String groupId, String artifactId, String version) {
             this.groupId = groupId;
             this.artifactId = artifactId;
             this.version = version;
         }
-
-        private final String groupId;
-        private final String artifactId;
-        private final String version;
 
         @Override
         public String toString() {
@@ -113,15 +113,15 @@ public class KotlinBootstrap {
 
     static class KotlinLibrary {
 
+        private final String name;
+        private final String groupId;
+        private final String artifactId;
+
         public KotlinLibrary(String name, String groupId, String artifactId) {
             this.name = name;
             this.groupId = groupId;
             this.artifactId = artifactId;
         }
-
-        private final String name;
-        private final String groupId;
-        private final String artifactId;
 
         public MavenDependency toDependency(String version) {
             return new MavenDependency(groupId, artifactId, version);

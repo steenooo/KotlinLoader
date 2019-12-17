@@ -13,7 +13,7 @@ class LanguageScanner(val data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
 
 
     companion object {
-        private val ASM_API_VERSION: Int = Opcodes.ASM7
+        private const val ASM_API_VERSION: Int = Opcodes.ASM7
 
 
         fun createScanner(file: File, descriptionFile: KotlinPluginDescription): LanguageScanner {

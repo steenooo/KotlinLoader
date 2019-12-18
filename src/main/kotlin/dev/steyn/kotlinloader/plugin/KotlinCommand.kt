@@ -18,15 +18,10 @@ class KotlinCommand : CommandExecutor {
         fun sendLine(prefix: String, value: String) {
             sender.sendMessage("${GRAY}${prefix}:${AQUA} $value")
         }
-
-        val config = KotlinLoaderPlugin.getInstance().config
         sender.sendMessage(LINE)
         sendLine("Plugin", KotlinLoaderPlugin.getInstance().description.version)
-        sender.sendMessage("${GRAY}Kotlin:")
-        sendLine("  stdlib", config.getString("kotlin.library.stdlib")!!)
-        sendLine("  coroutines", config.getString("kotlin.library.coroutines")!!)
-        sendLine("  reflect", config.getString("kotlin.library.reflect")!!)
-        sender.sendMessage("${GRAY}Plugins: ${AQUA}${KotlinPlugin.COUNT.get()}")
+        sendLine("Kotlin", KotlinVersion.CURRENT.toString())
+        sendLine("Plugins", KotlinPlugin.COUNT.get().toString())
         sender.sendMessage(LINE)
         return true
     }

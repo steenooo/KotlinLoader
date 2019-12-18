@@ -70,9 +70,7 @@ public class KotlinBootstrap {
     private void addFileToLoader(ClassLoader loader, File file) throws Exception {
         Method m = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
         m.setAccessible(true);
-        URL url = file.toURI().toURL();
-        System.out.println(url.toString());
-        m.invoke(loader, url);
+        m.invoke(loader, file.toURI().toURL());
     }
 
 }

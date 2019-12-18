@@ -19,7 +19,6 @@ class KotlinLoader(val plugin: KotlinLoaderPlugin) {
         val pluginsFolder = File(plugin.dataFolder.parent, "kotlin")
         if (!pluginsFolder.exists()) {
             pluginsFolder.mkdirs()
-            pluginsFolder.mkdir()
         }
         manager.loadPlugins(pluginsFolder).toList().forEach {
             it.logger.info("Loading Kotlin Plugin ${it.description.fullName}..")

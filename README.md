@@ -1,6 +1,6 @@
 
 # KotlinLoader
-[![](https://jitpack.io/v/steenooo/kotlin-loader.svg)](https://jitpack.io/#steenooo/kotlin-loader)\
+[![](https://jitpack.io/v/steenooo/KotlinLoader.svg)](https://jitpack.io/#steenooo/KotlinLoader)\
 Kotlin PluginLoader for Spigot.
 
 
@@ -61,7 +61,7 @@ Maven
 <dependency>
     <groupId>com.github.steenooo.KotlinLoader</groupId>
     <artifactId>kotlin-loader</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -76,6 +76,9 @@ allprojects {
 	}
   
 dependencies {
-	        implementation 'com.github.steenooo:kotlin-loader:Tag'
+	        implementation 'com.github.steenooo:kotlin-loader:1.0.1'
 	}
 ```
+
+
+This project was inspired by [ScalaLoader](https://github.com/Jannyboy11/ScalaPluginLoader)

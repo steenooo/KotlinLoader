@@ -10,6 +10,7 @@ import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
 import java.security.CodeSource
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
 import java.util.jar.Manifest
@@ -115,6 +116,15 @@ class KotlinPluginClassLoader(
         } catch (e: Exception) {
             throw e
         }
+    }
+
+
+    override fun getResource(name: String?): URL? {
+        return findResource(name)
+    }
+
+    override fun getResources(name: String?): Enumeration<URL> {
+        return findResources(name)
     }
 
 }

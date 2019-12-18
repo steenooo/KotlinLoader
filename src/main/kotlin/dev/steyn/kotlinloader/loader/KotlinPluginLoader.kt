@@ -42,7 +42,7 @@ class KotlinPluginLoader(
         }
         val desc = getPluginDescription(file).asKotlin()
         val scanner = LanguageScanner.createScanner(file, desc)
-        if (scanner.extendsKotlinPlugin()) {
+        if (scanner.isKotlinPlugin()) {
             return this.loadPlugin(file, desc)
         }
         return KotlinInjector.loader.loadPlugin(file)

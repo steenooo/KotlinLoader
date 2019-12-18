@@ -49,7 +49,7 @@ class KotlinPluginClassLoader(
                 throw InvalidPluginException("${desc.main} does not extend KotlinPlugin", ex)
             }.let {
                 it.kotlin.objectInstance ?: try {
-                    it.getDeclaredConstructor().newInstance()
+                    it.getConstructor().newInstance()
                 } catch (ex: IllegalAccessException) {
                     throw InvalidPluginException("Unable to find a public constructor", ex)
                 } catch (ex: InstantiationException) {

@@ -15,13 +15,13 @@ class KotlinCommand : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
 
-        fun sendLine(prefix: String, value: String) {
+        fun sendLine(prefix: String, value: Any) {
             sender.sendMessage("${GRAY}${prefix}:${AQUA} $value")
         }
         sender.sendMessage(LINE)
         sendLine("Plugin", KotlinLoaderPlugin.getInstance().description.version)
-        sendLine("Kotlin", KotlinVersion.CURRENT.toString())
-        sendLine("Plugins", KotlinPlugin.COUNT.get().toString())
+        sendLine("Kotlin", KotlinVersion.CURRENT)
+        sendLine("Plugins", KotlinPlugin.COUNT.get())
         sender.sendMessage(LINE)
         return true
     }

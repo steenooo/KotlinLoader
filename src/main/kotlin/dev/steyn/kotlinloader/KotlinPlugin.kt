@@ -76,7 +76,7 @@ abstract class KotlinPlugin : PluginBase() {
     private lateinit var _config: FileConfiguration
     private lateinit var _logger: PluginLogger
 
-    var enabled: Boolean
+    internal var enabled: Boolean
         set(value) {
             if (_enabled != value) {
                 _enabled = value

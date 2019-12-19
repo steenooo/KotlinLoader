@@ -3,8 +3,10 @@ package dev.steyn.kotlinloader.loader
 import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.desc.asKotlin
+import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
+import dev.steyn.kotlinloader.kts.KtsPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
 import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
 import org.bukkit.Server
@@ -13,6 +15,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.event.Event
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLoader
 import org.bukkit.plugin.RegisteredListener
 import java.io.File
@@ -26,8 +29,9 @@ class KotlinPluginLoader(
         val server: Server
 ) : PluginLoader {
 
-    private val loaders: MutableList<KotlinPluginClassLoader> = CopyOnWriteArrayList<KotlinPluginClassLoader>()
+    private val loaders: MutableList<AbstractPluginClassLoader> = CopyOnWriteArrayList<AbstractPluginClassLoader>()
     private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
+    private val ktsFiles = ConcurrentHashMap<File, KtsPluginClassLoader>()
 
 
     init {
@@ -40,16 +44,21 @@ class KotlinPluginLoader(
         if (!file.exists()) {
             throw PluginFileMissingException(file)
         }
+        if(file.name.endsWith(".kts")) {
+            val x = ktsFiles[file] ?: throw InvalidPluginException("Plugin did not load.")
+            x.init()
+            return x.plugin
+        }
         val desc = getPluginDescription(file).asKotlin()
         val scanner = LanguageScanner.createScanner(file, desc)
         if (scanner.isKotlinPlugin()) {
-            return this.loadPlugin(file, desc)
+            return this.loadJarPlugin(file, desc)
         }
         return KotlinInjector.loader.loadPlugin(file)
     }
 
 
-    private fun loadPlugin(file: File, desc: KotlinPluginDescription): Plugin {
+    private fun loadJarPlugin(file: File, desc: KotlinPluginDescription): Plugin {
         val parent = file.parentFile
         val dataFolder = File(parent, desc.name)
         val loader = KotlinPluginClassLoader(
@@ -153,7 +162,16 @@ class KotlinPluginLoader(
             KotlinInjector.loader.createRegisteredListeners(listener
                     , plugin)
 
-    override fun getPluginFileFilters(): Array<Pattern> = KotlinInjector.loader.pluginFileFilters
+    override fun getPluginFileFilters(): Array<Pattern> = arrayOf(*KotlinInjector.loader.pluginFileFilters, Pattern.compile("\\.kts$"))
 
-    override fun getPluginDescription(file: File) = KotlinInjector.loader.getPluginDescription(file)
+    override fun getPluginDescription(file: File) : PluginDescriptionFile{
+        if(file.name.endsWith(".kts")) {
+            return (ktsFiles[file] ?: let {
+                val loader = KtsPluginClassLoader(this, javaClass.classLoader, file, server)
+                ktsFiles[file] = loader
+                loader
+            }).description.bukkit
+        }
+        return KotlinInjector.loader.getPluginDescription(file)
+    }
 }

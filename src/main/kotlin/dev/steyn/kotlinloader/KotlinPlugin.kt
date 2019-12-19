@@ -2,6 +2,7 @@ package dev.steyn.kotlinloader
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
+import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
@@ -52,7 +53,7 @@ abstract class KotlinPlugin : PluginBase() {
         COUNT.incrementAndGet()
     }
 
-    fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
+    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
         this._pluginDescriptionFile = desc
         this._file = file
         this._dataFolder = dataFolder
@@ -69,7 +70,7 @@ abstract class KotlinPlugin : PluginBase() {
     private lateinit var _dataFolder: File
     private var _enabled: Boolean = false
     private var _naggable = false
-    private lateinit var _loader: KotlinPluginClassLoader
+    private lateinit var _loader: AbstractPluginClassLoader
     private lateinit var _pluginLoader: KotlinPluginLoader
     private lateinit var _server: Server
     private lateinit var _configFile: File

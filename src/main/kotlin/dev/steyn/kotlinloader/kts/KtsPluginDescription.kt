@@ -31,5 +31,5 @@ class KtsPluginDescription(
 
 
     override val bukkit: PluginDescriptionFile
-        get() = PluginDescriptionFile(main, name, version)
+        get() = PluginDescriptionFile(name, version, main)
 }

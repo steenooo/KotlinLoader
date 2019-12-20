@@ -15,17 +15,18 @@ class KtsPluginClassLoader(
         val server: Server
 ) : AbstractPluginClassLoader(pluginLoader, emptyArray(), parent) {
 
-    val engine = ScriptEngineManager().getEngineByExtension("kts") as Compilable
+    val engine: Compilable
     val builder: KtsPluginBuilder
     val description: KtsPluginDescription
     val folder: File
     lateinit var plugin: KtsPlugin
 
     init {
+        println("First: " + KtsPluginBuilder::class.java.classLoader.javaClass.name)
+        Thread.currentThread().contextClassLoader = this
+        this.engine = ScriptEngineManager().getEngineByExtension("kts") as Compilable
         this.builder = FileReader(file).use {
             val script = engine.compile(it)
-
-
             script.eval()
         } as KtsPluginBuilder
 
@@ -35,7 +36,7 @@ class KtsPluginClassLoader(
     }
 
     fun init() {
-        plugin = KtsPlugin(builder.onEnable, builder.onDisable, builder.onLoad)
+        plugin = KtsPlugin(builder.onEnable ?: {}, builder.onDisable ?: {}, builder.onLoad ?: {})
         plugin.init(file, folder, this, pluginLoader, description, server)
     }
 

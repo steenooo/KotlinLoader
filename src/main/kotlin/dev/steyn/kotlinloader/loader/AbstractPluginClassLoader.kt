@@ -22,6 +22,7 @@ abstract class AbstractPluginClassLoader(
 
 
     open fun findClass(name: String, global: Boolean) : Class<*>? {
+        println(name)
         fun byLocal(name: String): Class<*>? = classes[name]
         fun byGlobal(name: String): Class<*>? = pluginLoader.getClass(name)
         fun byParent() = super.findClass(name)

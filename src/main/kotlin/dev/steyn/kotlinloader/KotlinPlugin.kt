@@ -1,7 +1,6 @@
 package dev.steyn.kotlinloader
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
-import dev.steyn.kotlinloader.exception.IllegalLoaderException
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
@@ -47,9 +46,9 @@ abstract class KotlinPlugin : PluginBase() {
     }
 
     init {
-        if (this::class.java.classLoader !is KotlinPluginClassLoader) {
-            throw IllegalLoaderException()
-        }
+//        if (this::class.java.classLoader !is KotlinPluginClassLoader) {
+//            throw IllegalLoaderException()
+//        }
         COUNT.incrementAndGet()
     }
 

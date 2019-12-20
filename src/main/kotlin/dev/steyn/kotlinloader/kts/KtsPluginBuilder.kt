@@ -8,9 +8,9 @@ import org.bukkit.plugin.PluginLoadOrder
 typealias PluginInitializer = KtsPlugin.() -> Unit
 class KtsPluginBuilder {
 
-    internal lateinit var onEnable: PluginInitializer
-    internal lateinit var onDisable: PluginInitializer
-    internal lateinit var onLoad: PluginInitializer
+    internal var onEnable: PluginInitializer? = null
+    internal var onDisable: PluginInitializer? = null
+    internal var onLoad: PluginInitializer? = null
 
     lateinit var name: String
     lateinit var version: String
@@ -38,6 +38,7 @@ class KtsPluginBuilder {
 
 fun plugin(x : KtsPluginBuilder.() -> Unit) : KtsPluginBuilder {
     println("We're executed!")
+    println("Second: " + KtsPluginBuilder::class.java.classLoader.javaClass.name)
     val builder = KtsPluginBuilder()
     x(builder)
     return builder

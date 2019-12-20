@@ -168,12 +168,16 @@ class KotlinPluginLoader(
     override fun getPluginFileFilters(): Array<Pattern> = arrayOf(*KotlinInjector.loader.pluginFileFilters, Pattern.compile("\\.kts$"))
 
     override fun getPluginDescription(file: File): PluginDescriptionFile {
-        if (file.name.endsWith(".kts")) {
-            return (ktsFiles[file] ?: let {
-                val loader = KtsPluginClassLoader(this, KotlinLoaderPlugin::class.java.classLoader, file, server)
-                ktsFiles[file] = loader
-                loader
-            }).description.bukkit
+        try {
+            if (file.name.endsWith(".kts")) {
+                return (ktsFiles[file] ?: let {
+                    val loader = KtsPluginClassLoader(this, KotlinLoaderPlugin::class.java.classLoader, file, server)
+                    ktsFiles[file] = loader
+                    loader
+                }).description.bukkit
+            }
+        } catch(e: Exception) {
+           throw org.bukkit.plugin.InvalidPluginException(e)
         }
         return KotlinInjector.loader.getPluginDescription(file)
     }

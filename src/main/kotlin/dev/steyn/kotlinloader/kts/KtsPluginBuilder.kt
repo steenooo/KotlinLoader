@@ -37,8 +37,6 @@ class KtsPluginBuilder {
 }
 
 fun plugin(x : KtsPluginBuilder.() -> Unit) : KtsPluginBuilder {
-    println("We're executed!")
-    println("Second: " + KtsPluginBuilder::class.java.classLoader.javaClass.name)
     val builder = KtsPluginBuilder()
     x(builder)
     return builder

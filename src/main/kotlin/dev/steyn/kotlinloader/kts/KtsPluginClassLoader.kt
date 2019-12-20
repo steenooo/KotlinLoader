@@ -22,7 +22,6 @@ class KtsPluginClassLoader(
     lateinit var plugin: KtsPlugin
 
     init {
-        println("First: " + KtsPluginBuilder::class.java.classLoader.javaClass.name)
         Thread.currentThread().contextClassLoader = this
         this.engine = ScriptEngineManager().getEngineByExtension("kts") as Compilable
         this.builder = FileReader(file).use {
@@ -40,13 +39,4 @@ class KtsPluginClassLoader(
         plugin.init(file, folder, this, pluginLoader, description, server)
     }
 
-    override fun findClass(name: String): Class<*> {
-        println("find Class $name")
-        return super.findClass(name)
-    }
-
-    override fun loadClass(name: String?): Class<*> {
-        println("Load class $name")
-        return super.loadClass(name)
-    }
 }

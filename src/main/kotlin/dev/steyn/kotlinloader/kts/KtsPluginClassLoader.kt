@@ -5,6 +5,7 @@ import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
 import java.io.File
 import java.io.FileReader
+import javax.script.Compilable
 import javax.script.ScriptEngineManager
 
 class KtsPluginClassLoader(
@@ -14,21 +15,37 @@ class KtsPluginClassLoader(
         val server: Server
 ) : AbstractPluginClassLoader(pluginLoader, emptyArray(), parent) {
 
-    val engine = ScriptEngineManager(this).getEngineByExtension("kts")
-    val builder = FileReader(file).use {
-        println(engine)
-        val x = engine.eval(it)
-        println(x)
-        x
-    } as KtsPluginBuilder
-    val description = KtsPluginDescription(builder)
-    val folder = File(file.parent, builder.name)
+    val engine = ScriptEngineManager().getEngineByExtension("kts") as Compilable
+    val builder: KtsPluginBuilder
+    val description: KtsPluginDescription
+    val folder: File
     lateinit var plugin: KtsPlugin
+
+    init {
+        this.builder = FileReader(file).use {
+            val script = engine.compile(it)
+
+
+            script.eval()
+        } as KtsPluginBuilder
+
+        description = KtsPluginDescription(builder)
+        folder = File(file.parent, builder.name)
+
+    }
 
     fun init() {
         plugin = KtsPlugin(builder.onEnable, builder.onDisable, builder.onLoad)
-        plugin.init(file, folder, this, pluginLoader,  description, server)
+        plugin.init(file, folder, this, pluginLoader, description, server)
     }
 
+    override fun findClass(name: String): Class<*> {
+        println("find Class $name")
+        return super.findClass(name)
+    }
 
+    override fun loadClass(name: String?): Class<*> {
+        println("Load class $name")
+        return super.loadClass(name)
+    }
 }

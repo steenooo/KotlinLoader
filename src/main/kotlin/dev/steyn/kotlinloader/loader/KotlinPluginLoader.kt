@@ -1,6 +1,7 @@
 package dev.steyn.kotlinloader.loader
 
 import dev.steyn.kotlinloader.KotlinPlugin
+import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.desc.asKotlin
 import dev.steyn.kotlinloader.exception.InvalidPluginException
@@ -167,7 +168,7 @@ class KotlinPluginLoader(
     override fun getPluginDescription(file: File) : PluginDescriptionFile{
         if(file.name.endsWith(".kts")) {
             return (ktsFiles[file] ?: let {
-                val loader = KtsPluginClassLoader(this, javaClass.classLoader, file, server)
+                val loader = KtsPluginClassLoader(this, KotlinLoaderPlugin::class.java.classLoader, file, server)
                 ktsFiles[file] = loader
                 loader
             }).description.bukkit

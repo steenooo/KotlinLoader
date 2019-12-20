@@ -36,12 +36,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <artifactId>kotlinx-coroutines-jdk8</artifactId>
-      <groupId>org.jetbrains.kotlinx</groupId>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-scripting-jsr223-embeddable</artifactId>
+      <version>1.3.61</version>
       <scope>provided</scope>
-      <version>${kotlinx.coroutines.version}</version>
     </dependency>
-
     <dependency>
       <artifactId>spigot-api</artifactId>
       <groupId>org.spigotmc</groupId>

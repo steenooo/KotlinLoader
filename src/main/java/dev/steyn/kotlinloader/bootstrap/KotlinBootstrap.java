@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class KotlinBootstrap {
@@ -57,7 +58,7 @@ public class KotlinBootstrap {
                         }
                     }
                 }
-                addFileToLoader(KotlinLoaderPlugin.class.getClassLoader(), file);
+                addFileToLoader(Bukkit.class.getClassLoader(), file);
             } catch (Exception e) {
                 e.printStackTrace();
             }

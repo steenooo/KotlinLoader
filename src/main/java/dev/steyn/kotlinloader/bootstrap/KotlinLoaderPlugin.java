@@ -14,6 +14,7 @@ public class KotlinLoaderPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+
         saveDefaultConfig();
         KotlinBootstrap bootstrap = new KotlinBootstrap();
         bootstrap.init(this);
@@ -25,4 +26,9 @@ public class KotlinLoaderPlugin extends JavaPlugin {
     public void onEnable() {
         Objects.requireNonNull(getCommand("kotlinloader")).setExecutor(new KotlinCommand());
     }
+
+    public ClassLoader getLoader() {
+        return getClassLoader();
+    }
+
 }

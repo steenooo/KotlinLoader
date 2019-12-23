@@ -1,12 +1,11 @@
-package dev.steyn.kotlinloader.kts
+package dev.steyn.kotlinloader.kts.plugin
 
+import dev.steyn.kotlinloader.kts.ScriptExecutor
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
 import java.io.File
 import java.io.FileReader
-import javax.script.Compilable
-import javax.script.ScriptEngineManager
 
 class KtsPluginClassLoader(
         pluginLoader: KotlinPluginLoader,
@@ -15,7 +14,7 @@ class KtsPluginClassLoader(
         val server: Server
 ) : AbstractPluginClassLoader(pluginLoader, emptyArray(), parent) {
 
-    lateinit var engine: Compilable
+
     lateinit var builder: KtsPluginBuilder
     val description: KtsPluginDescription
     val folder: File
@@ -24,11 +23,9 @@ class KtsPluginClassLoader(
     init {
             Thread {
                 Thread.currentThread().contextClassLoader = this
-                this.engine = ScriptEngineManager().getEngineByExtension("kts") as Compilable
                 this.builder = FileReader(file).use {
-                    val script = engine.compile(it)
-                    script.eval()
-                } as KtsPluginBuilder
+                    ScriptExecutor<KtsPluginBuilder>(source = it).execute()
+                }
             }.run {
                 start()
                 join()
@@ -39,8 +36,9 @@ class KtsPluginClassLoader(
     }
 
     fun init() {
-        plugin = KtsPlugin(builder.onEnable ?: {}, builder.onDisable ?: {}, builder.onLoad ?: {})
-        plugin.init(file, folder, this, pluginLoader, description, server)
+        plugin = KtsPlugin(builder.onEnable
+                ?: {}, builder.onDisable ?: {}, builder.onLoad ?: {})
+        plugin.init(file, folder, this, pluginLoader, description, server, false)
     }
 
 

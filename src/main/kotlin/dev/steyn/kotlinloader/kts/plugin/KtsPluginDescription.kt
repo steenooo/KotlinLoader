@@ -1,4 +1,4 @@
-package dev.steyn.kotlinloader.kts
+package dev.steyn.kotlinloader.kts.plugin
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import org.bukkit.permissions.Permission

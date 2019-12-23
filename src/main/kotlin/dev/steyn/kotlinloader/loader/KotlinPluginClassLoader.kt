@@ -1,6 +1,7 @@
 package dev.steyn.kotlinloader.loader
 
 import com.google.common.io.ByteStreams
+import dev.steyn.kotlinloader.Kotlin
 import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.InvalidPluginException
@@ -51,7 +52,9 @@ class KotlinPluginClassLoader(
             }
 
     init {
-        plugin.init(file, folder, this, pluginLoader, desc, pluginLoader.server)
+        val mainClass = Class.forName(desc.name)
+        val useKts = mainClass.getAnnotation(Kotlin::class.java)?.ktsConfig ?: false
+        plugin.init(file, folder, this, pluginLoader, desc, pluginLoader.server, useKts)
     }
 
 

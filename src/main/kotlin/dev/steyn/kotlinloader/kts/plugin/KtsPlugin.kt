@@ -1,4 +1,4 @@
-package dev.steyn.kotlinloader.kts
+package dev.steyn.kotlinloader.kts.plugin
 
 import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.exception.notAvailableInScript

@@ -2,7 +2,8 @@ package dev.steyn.kotlinloader
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
-import dev.steyn.kotlinloader.kts.KtsPlugin
+import dev.steyn.kotlinloader.kts.ScriptExecutor
+import dev.steyn.kotlinloader.kts.plugin.KtsPlugin
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
@@ -54,18 +55,22 @@ abstract class KotlinPlugin : PluginBase() {
         COUNT.incrementAndGet()
     }
 
-    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
+    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server, useKtsConfig: Boolean) {
+       this.useKtsConfig = useKtsConfig
         this._pluginDescriptionFile = desc
         this._file = file
         this._dataFolder = dataFolder
         this._loader = loader
         this._pluginLoader = pluginLoader
         this._server = server
-        this._configFile = File(dataFolder, "config.yml")
+        this._configFile = File(dataFolder, "config${if(useKtsConfig) ".kts" else ".yml"}")
         this._config = reloadConfig0()
         this._logger = PluginLogger(this)
     }
 
+
+
+    private var useKtsConfig: Boolean = false
     private lateinit var _pluginDescriptionFile: KotlinPluginDescription
     private lateinit var _file: File
     private lateinit var _dataFolder: File
@@ -74,8 +79,9 @@ abstract class KotlinPlugin : PluginBase() {
     private lateinit var _loader: AbstractPluginClassLoader
     private lateinit var _pluginLoader: KotlinPluginLoader
     private lateinit var _server: Server
+    private var ktsConfig: Any? = null
     private lateinit var _configFile: File
-    private lateinit var _config: FileConfiguration
+    private var _config: FileConfiguration? = null
     private lateinit var _logger: PluginLogger
 
     internal var enabled: Boolean
@@ -111,7 +117,7 @@ abstract class KotlinPlugin : PluginBase() {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) = false
 
-    override fun getConfig() = _config
+    override fun getConfig() = _config!!
     override fun getPluginLoader() = _pluginLoader
 
     override fun getDescription() = _pluginDescriptionFile.bukkit
@@ -121,13 +127,17 @@ abstract class KotlinPlugin : PluginBase() {
 
     override fun saveDefaultConfig() {
         if (!_configFile.exists()) {
-            saveResource("config.yml", false)
+            saveResource("config${if (useKtsConfig) ".kts" else ".yml"}", false)
         }
     }
 
 
     override fun reloadConfig() { //load from config file in plugin directory if present - otherwise load values from the default config (included in the jar)
-        reloadConfig0()
+        if(!useKtsConfig) {
+            reloadConfig0()
+        } else {
+            readKtsConfig<Any>(_configFile)
+        }
     }
 
     private fun reloadConfig0(): FileConfiguration {
@@ -154,7 +164,6 @@ abstract class KotlinPlugin : PluginBase() {
     override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {
         return null
     }
-
 
     override fun getResource(filename: String): InputStream? {
         Objects.requireNonNull(filename, "Filename cannot be null")
@@ -202,6 +211,25 @@ abstract class KotlinPlugin : PluginBase() {
         } catch (ex: IOException) {
             logger.log(Level.SEVERE, "Could not save " + outFile.name + " to " + outFile, ex)
         }
-
     }
+
+    fun <T> getKtsConfig() : T? {
+        return ktsConfig as? T
+    }
+
+    fun <T> readKtsConfig(file: File) : T? {
+        var result: T? = null
+        Thread {
+            result = FileReader(file).use {
+                val exec = ScriptExecutor<T>(it)
+                exec.execute()
+            }
+        }.run {
+            start()
+            join()
+        }
+        ktsConfig = result
+        return result
+    }
+
 }

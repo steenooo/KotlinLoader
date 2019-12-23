@@ -8,8 +8,8 @@ import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
 import dev.steyn.kotlinloader.exception.UnableToLoadScriptException
-import dev.steyn.kotlinloader.kts.KtsPlugin
-import dev.steyn.kotlinloader.kts.KtsPluginClassLoader
+import dev.steyn.kotlinloader.kts.plugin.KtsPlugin
+import dev.steyn.kotlinloader.kts.plugin.KtsPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
 import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
 import org.bukkit.Server

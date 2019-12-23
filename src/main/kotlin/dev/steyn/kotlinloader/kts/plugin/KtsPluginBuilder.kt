@@ -1,4 +1,4 @@
-package dev.steyn.kotlinloader.kts
+package dev.steyn.kotlinloader.kts.plugin
 
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.plugin.PluginAwareness

@@ -21,6 +21,8 @@ interface KotlinPluginDescription {
     val awareness: Set<PluginAwareness>
     val apiVersion: String?
     val kotlinVersion: KotlinVersion
+    val authors: List<String>
+
 
 
     val bukkit: PluginDescriptionFile

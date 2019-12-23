@@ -160,7 +160,6 @@ class KotlinPluginLoader(
         }
     }
 
-
     override fun createRegisteredListeners(listener: Listener, plugin: Plugin): MutableMap<Class<out Event>, MutableSet<RegisteredListener>> =
             KotlinInjector.loader.createRegisteredListeners(listener
                     , plugin)

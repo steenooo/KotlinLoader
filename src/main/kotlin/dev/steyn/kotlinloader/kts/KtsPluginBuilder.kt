@@ -22,7 +22,7 @@ class KtsPluginBuilder {
     var defaultPerm: PermissionDefault = PermissionDefault.OP
     var awareness: Set<PluginAwareness> = emptySet()
     var kotlinVersion: KotlinVersion = KotlinVersion.CURRENT
-    
+    var authors: List<String> = listOf()
     
     fun enable(initializer : PluginInitializer) {
         onEnable = initializer

@@ -17,11 +17,25 @@ class KtsPluginDescription(
         override val order: PluginLoadOrder = PluginLoadOrder.POSTWORLD,
         override val defaultPerm: PermissionDefault = PermissionDefault.OP,
         override val awareness: Set<PluginAwareness> = emptySet(),
-        override val kotlinVersion: KotlinVersion = KotlinVersion.CURRENT
+        override val kotlinVersion: KotlinVersion = KotlinVersion.CURRENT,
+        override val authors: List<String>
+
 ) : KotlinPluginDescription {
 
 
-    constructor(builder: KtsPluginBuilder) : this(builder.name, builder.version, builder.description, builder.website, builder.prefix, builder.apiVersion, builder.order, builder.defaultPerm)
+    constructor(builder: KtsPluginBuilder) : this(
+            builder.name,
+            builder.version,
+            builder.description,
+            builder.website,
+            builder.prefix,
+            builder.apiVersion,
+            builder.order,
+            builder.defaultPerm,
+            setOf<PluginAwareness>(),
+            builder.kotlinVersion,
+            builder.authors)
+
 
     override val main: String = "KtsPlugin"
     override val permissions: List<Permission>?
@@ -30,6 +44,22 @@ class KtsPluginDescription(
         get() = emptyMap<Any, Any>()
 
 
-    override val bukkit: PluginDescriptionFile
-        get() = PluginDescriptionFile(name, version, main)
+    override val bukkit: PluginDescriptionFile by lazy {
+
+        val desc = PluginDescriptionFile(name, version, main)
+
+//        val map = hashMapOf(
+//                "name" to name,
+//                "version" to version,
+//                "main" to main,
+//                "website" to website,
+//                "description" to description,
+//                "load" to order,
+//                "authors" to authors,
+//                "lazyPermissions" to lazyPermissions,
+//                "prefix" to prefix
+//        )
+
+        desc
+    }
 }

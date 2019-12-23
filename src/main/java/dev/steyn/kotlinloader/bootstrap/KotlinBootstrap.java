@@ -16,7 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class KotlinBootstrap {
 
     public void init(KotlinLoaderPlugin plugin) {
-        plugin.getLogger().info("Preparing libraries..");
+        plugin.getLogger().info("Loading libraries..");
         FileConfiguration config = plugin.getConfig();
         File libraries = new File(plugin.getDataFolder(), "libraries");
         if (!libraries.exists()) {

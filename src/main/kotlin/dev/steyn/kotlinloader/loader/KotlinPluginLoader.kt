@@ -7,6 +7,7 @@ import dev.steyn.kotlinloader.desc.asKotlin
 import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
+import dev.steyn.kotlinloader.exception.UnableToLoadScriptException
 import dev.steyn.kotlinloader.kts.KtsPlugin
 import dev.steyn.kotlinloader.kts.KtsPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
@@ -176,7 +177,7 @@ class KotlinPluginLoader(
                 }).description.bukkit
             }
         } catch(e: Exception) {
-           throw org.bukkit.plugin.InvalidPluginException(e)
+           throw UnableToLoadScriptException(file)
         }
         return KotlinInjector.loader.getPluginDescription(file)
     }

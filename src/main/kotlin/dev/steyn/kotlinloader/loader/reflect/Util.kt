@@ -37,6 +37,9 @@ internal fun JarFile.readClass(name: String) = this.getInputStream(getClass(name
 fun <R> reflect(target: Any?, field: Field) = ReflectiveFieldDelegation<R>(target, field)
 fun <R> reflect(target: Any?, field: () -> Field) = ReflectiveFieldDelegation<R>(target, field())
 
+fun <R> reflectLazy(target: Any?, field: Field) = LazyReflectiveFieldDelegation<R>(target, field)
+fun <R> reflectLazy(target: Any?, field: () -> Field) = LazyReflectiveFieldDelegation<R>(target, field())
+
 fun <R> reflectMutable(target: Any?, field: Field) = MutableReflectiveFieldDelegation<R>(target, field)
 fun <R> reflectMutable(target: Any?, field: () -> Field) = MutableReflectiveFieldDelegation<R>(target, field())
 
@@ -51,6 +54,19 @@ open class ReflectiveFieldDelegation<R : Any?>(val target: Any?, val field: Fiel
     }
 }
 
+class LazyReflectiveFieldDelegation<R : Any?>(val target: Any?, val field: Field) : ReadOnlyProperty<Any, R> {
+
+    init {
+        field.isAccessible = true
+    }
+    private val value: R by lazy {
+        field.get(target) as R
+    }
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): R {
+        return value
+    }
+}
 
 class MutableReflectiveFieldDelegation<R : Any?>(target: Any?, field: Field) : ReflectiveFieldDelegation<R>(target, field), ReadWriteProperty<Any, R> {
     init {

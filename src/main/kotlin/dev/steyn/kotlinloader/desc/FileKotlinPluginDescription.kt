@@ -40,6 +40,9 @@ class FileKotlinPluginDescription(private val file: PluginDescriptionFile) : Kot
 
     override val bukkit: PluginDescriptionFile
         get() = file
+
+    override val authors: List<String>
+        get() = file.authors
 }
 
 

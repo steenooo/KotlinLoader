@@ -22,19 +22,19 @@ class KtsPluginClassLoader(
     lateinit var plugin: KtsPlugin
 
     init {
-        Thread {
-            Thread.currentThread().contextClassLoader = this
-            this.engine = ScriptEngineManager().getEngineByExtension("kts") as Compilable
-            this.builder = FileReader(file).use {
-                val script = engine.compile(it)
-                script.eval()
-            } as KtsPluginBuilder
-        }.run {
-            start()
-            join()
-        }
-        description = KtsPluginDescription(builder)
-        folder = File(file.parent, builder.name)
+            Thread {
+                Thread.currentThread().contextClassLoader = this
+                this.engine = ScriptEngineManager().getEngineByExtension("kts") as Compilable
+                this.builder = FileReader(file).use {
+                    val script = engine.compile(it)
+                    script.eval()
+                } as KtsPluginBuilder
+            }.run {
+                start()
+                join()
+            }
+            description = KtsPluginDescription(builder)
+            folder = File(file.parent, builder.name)
 
     }
 
@@ -42,5 +42,7 @@ class KtsPluginClassLoader(
         plugin = KtsPlugin(builder.onEnable ?: {}, builder.onDisable ?: {}, builder.onLoad ?: {})
         plugin.init(file, folder, this, pluginLoader, description, server)
     }
+
+
 
 }

@@ -8,7 +8,6 @@ import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
 import dev.steyn.kotlinloader.exception.UnableToLoadScriptException
-import dev.steyn.kotlinloader.kts.plugin.KtsPlugin
 import dev.steyn.kotlinloader.kts.plugin.KtsPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
 import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
@@ -98,7 +97,6 @@ class KotlinPluginLoader(
             return
         }
         val loader = plugin.javaClass.classLoader
-        if(plugin !is KtsPlugin) {
             if (loader !is AbstractPluginClassLoader) {
                 throw PluginNotKotlinPluginException(plugin)
             }
@@ -106,7 +104,6 @@ class KotlinPluginLoader(
                 loaders.add(loader)
                 server.logger.log(Level.WARNING, "Enabled plugin with unregistered PluginClassLoader ${plugin.getDescription().fullName}")
             }
-        }
         plugin.logger.info("Enabling ${plugin.description.fullName}..")
         try {
             plugin.enabled = true

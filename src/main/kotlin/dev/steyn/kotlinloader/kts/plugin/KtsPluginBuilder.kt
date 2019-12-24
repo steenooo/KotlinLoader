@@ -1,5 +1,6 @@
 package dev.steyn.kotlinloader.kts.plugin
 
+import dev.steyn.kotlinloader.kts.KtsPlugin
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.plugin.PluginAwareness
 import org.bukkit.plugin.PluginLoadOrder
@@ -12,6 +13,7 @@ class KtsPluginBuilder {
     internal var onDisable: PluginInitializer? = null
     internal var onLoad: PluginInitializer? = null
 
+    lateinit var mainClass: String
     lateinit var name: String
     lateinit var version: String
     var description: String? = null
@@ -34,10 +36,6 @@ class KtsPluginBuilder {
     fun load(initializer : PluginInitializer) {
         onLoad = initializer
     }
-}
 
-fun plugin(x : KtsPluginBuilder.() -> Unit) : KtsPluginBuilder {
-    val builder = KtsPluginBuilder()
-    x(builder)
-    return builder
+    internal fun getMainClass() =  if(this::mainClass.isInitialized) mainClass else "ktsplugin.generated.$name"
 }

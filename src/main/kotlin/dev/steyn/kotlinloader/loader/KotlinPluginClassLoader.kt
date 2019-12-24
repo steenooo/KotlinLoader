@@ -52,7 +52,7 @@ class KotlinPluginClassLoader(
             }
 
     init {
-        val mainClass = Class.forName(desc.name)
+        val mainClass = Class.forName(desc.main)
         val useKts = mainClass.getAnnotation(Kotlin::class.java)?.ktsConfig ?: false
         plugin.init(file, folder, this, pluginLoader, desc, pluginLoader.server, useKts)
     }

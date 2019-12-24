@@ -3,7 +3,6 @@ package dev.steyn.kotlinloader
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
 import dev.steyn.kotlinloader.kts.ScriptExecutor
-import dev.steyn.kotlinloader.kts.plugin.KtsPlugin
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
@@ -49,7 +48,7 @@ abstract class KotlinPlugin : PluginBase() {
     }
 
     init {
-        if ((this !is KtsPlugin) && this::class.java.classLoader !is AbstractPluginClassLoader) {
+        if (this::class.java.classLoader !is AbstractPluginClassLoader) {
             throw IllegalLoaderException()
         }
         COUNT.incrementAndGet()
@@ -64,7 +63,11 @@ abstract class KotlinPlugin : PluginBase() {
         this._pluginLoader = pluginLoader
         this._server = server
         this._configFile = File(dataFolder, "config${if(useKtsConfig) ".kts" else ".yml"}")
-        this._config = reloadConfig0()
+
+        if(!isScript()) {
+            this._config = reloadConfig0()
+        }
+
         this._logger = PluginLogger(this)
     }
 
@@ -231,5 +234,7 @@ abstract class KotlinPlugin : PluginBase() {
         ktsConfig = result
         return result
     }
+
+    open fun isScript() = false
 
 }

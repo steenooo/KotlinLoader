@@ -1,8 +1,10 @@
-package dev.steyn.kotlinloader.kts.plugin
+package dev.steyn.kotlinloader.kts
 
 import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.exception.notAvailableInScript
 import dev.steyn.kotlinloader.kts.command.Commands
+import dev.steyn.kotlinloader.kts.plugin.KtsPluginBuilder
+import dev.steyn.kotlinloader.kts.plugin.PluginInitializer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
@@ -14,7 +16,7 @@ import org.bukkit.plugin.EventExecutor
 import org.bukkit.plugin.Plugin
 import java.io.InputStream
 
-class KtsPlugin internal constructor(
+abstract class KtsPlugin internal constructor(
         internal val onEnable: PluginInitializer,
         internal val onDisable: PluginInitializer,
         internal val onLoad: PluginInitializer
@@ -56,6 +58,8 @@ class KtsPlugin internal constructor(
         action(this)
     }
 
+    override fun isScript() = true
+
     override fun getResource(filename: String): InputStream? {
         notAvailableInScript()
     }
@@ -75,4 +79,11 @@ class KtsPlugin internal constructor(
     override fun saveConfig() {
         notAvailableInScript()
     }
+
+
+}
+fun plugin(x : KtsPluginBuilder.() -> Unit) : KtsPluginBuilder {
+    val builder = KtsPluginBuilder()
+    x(builder)
+    return builder
 }

@@ -1,7 +1,7 @@
 package dev.steyn.kotlinloader.plugin
 
-import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
+import dev.steyn.kotlinloader.loader.KotlinInjector
 import org.bukkit.ChatColor.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -21,7 +21,9 @@ class KotlinCommand : CommandExecutor {
         sender.sendMessage(LINE)
         sendLine("Plugin", KotlinLoaderPlugin.getInstance().description.version)
         sendLine("Kotlin", KotlinVersion.CURRENT)
-        sendLine("Plugins", KotlinPlugin.COUNT.get())
+        KotlinInjector.kotlinPluginLoader.plugins.let {a ->
+            sendLine("Plugins ${GRAY}(${AQUA}${a.size}${GRAY})", a.map { it.name }.joinToString("${GRAY},${AQUA} "))
+        }
         sender.sendMessage(LINE)
         return true
     }

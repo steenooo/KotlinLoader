@@ -32,4 +32,5 @@ object KotlinInjector {
 
     lateinit var hackedMap: HackedClassMap
 
+    lateinit var kotlinPluginLoader: KotlinPluginLoader
 }

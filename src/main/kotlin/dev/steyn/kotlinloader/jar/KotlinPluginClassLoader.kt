@@ -1,10 +1,12 @@
-package dev.steyn.kotlinloader.loader
+package dev.steyn.kotlinloader.jar
 
 import com.google.common.io.ByteStreams
 import dev.steyn.kotlinloader.Kotlin
 import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.InvalidPluginException
+import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
+import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import dev.steyn.kotlinloader.plugin.KotlinLoader
 import java.io.File
 import java.net.URL
@@ -33,7 +35,7 @@ class KotlinPluginClassLoader(
     }
 
 
-    val plugin =
+    override val plugin =
             try {
                 @Suppress("UNCHECKED_CAST")
                 Class.forName(desc.main, true, this) as Class<out KotlinPlugin>

@@ -2,9 +2,9 @@ package dev.steyn.kotlinloader
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
+import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.kts.ScriptExecutor
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
-import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
 import org.bukkit.command.Command
@@ -19,19 +19,13 @@ import java.net.URL
 import java.net.URLConnection
 import java.nio.charset.StandardCharsets
 import java.util.*
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import kotlin.reflect.KClass
-
 
 abstract class KotlinPlugin : PluginBase() {
 
 
     companion object {
-        //Keep count of the amount of plugins we manage.
-        val COUNT = AtomicInteger()
-
-
         @JvmStatic
         inline fun <reified T : KotlinPlugin> getPlugin(): T {
             return getPlugin(T::class)
@@ -51,7 +45,6 @@ abstract class KotlinPlugin : PluginBase() {
         if (this::class.java.classLoader !is AbstractPluginClassLoader) {
             throw IllegalLoaderException()
         }
-        COUNT.incrementAndGet()
     }
 
     fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server, useKtsConfig: Boolean) {

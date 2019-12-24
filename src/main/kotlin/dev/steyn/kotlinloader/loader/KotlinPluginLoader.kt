@@ -8,6 +8,7 @@ import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
 import dev.steyn.kotlinloader.exception.UnableToLoadScriptException
+import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.kts.plugin.KtsPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
 import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
@@ -39,6 +40,7 @@ class KotlinPluginLoader(
     init {
         KotlinInjector.hackedMap = HackedClassMap(KotlinInjector.javaMapField, this)
         KotlinInjector.javaMapField = KotlinInjector.hackedMap
+        KotlinInjector.kotlinPluginLoader = this
     }
 
 
@@ -178,4 +180,8 @@ class KotlinPluginLoader(
         }
         return KotlinInjector.loader.getPluginDescription(file)
     }
+
+
+    val plugins : List<KotlinPlugin>
+    get() = loaders.asSequence().map { it.plugin }.toList()
 }

@@ -1,5 +1,6 @@
 package dev.steyn.kotlinloader.loader
 
+import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.exception.ProtectedClassException
 import java.net.URL
 import java.net.URLClassLoader
@@ -51,5 +52,7 @@ abstract class AbstractPluginClassLoader(
         }
         return false
     }
+
+    abstract val plugin: KotlinPlugin
 
 }

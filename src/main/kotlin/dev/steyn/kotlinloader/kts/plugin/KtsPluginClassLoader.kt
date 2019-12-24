@@ -21,7 +21,7 @@ class KtsPluginClassLoader(
     lateinit var builder: KtsPluginBuilder
     val description: KtsPluginDescription
     val folder: File
-    lateinit var plugin: KtsPlugin
+    override lateinit var plugin: KtsPlugin
 
     init {
             Thread {

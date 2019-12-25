@@ -8,6 +8,7 @@ import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLoadOrder
 
 class KtsPluginDescription(
+        override val main: String,
         override val name: String,
         override val version: String,
         override val description: String?,
@@ -24,6 +25,7 @@ class KtsPluginDescription(
 
 
     constructor(builder: KtsPluginBuilder) : this(
+            builder.getMainClass(),
             builder.name,
             builder.version,
             builder.description,
@@ -36,8 +38,6 @@ class KtsPluginDescription(
             builder.kotlinVersion,
             builder.authors)
 
-
-    override val main: String = "KtsPlugin"
     override val permissions: List<Permission>?
         get() = emptyList()
     override val lazyPermissions: Map<*, *>?

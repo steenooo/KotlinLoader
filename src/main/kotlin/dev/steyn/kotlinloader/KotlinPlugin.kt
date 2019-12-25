@@ -1,7 +1,9 @@
 package dev.steyn.kotlinloader
 
+import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
+import dev.steyn.kotlinloader.exception.scriptingNotAvailable
 import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.kts.ScriptExecutor
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
@@ -210,10 +212,16 @@ abstract class KotlinPlugin : PluginBase() {
     }
 
     fun <T> getKtsConfig() : T? {
+        if(!KotlinLoaderPlugin.getInstance().allowScripting()) {
+            scriptingNotAvailable()
+        }
         return ktsConfig as? T
     }
 
     fun <T> readKtsConfig(file: File) : T? {
+        if(!KotlinLoaderPlugin.getInstance().allowScripting()) {
+            scriptingNotAvailable()
+        }
         var result: T? = null
         Thread {
             result = FileReader(file).use {

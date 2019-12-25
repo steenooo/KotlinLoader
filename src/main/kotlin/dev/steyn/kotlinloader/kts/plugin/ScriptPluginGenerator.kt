@@ -46,7 +46,6 @@ object ScriptPluginGenerator {
                     l0, l2, 3)
             mv.visitMaxs(4, 4)
             mv.visitEnd()
-
         cw.visitEnd()
         return cw.toByteArray()
     }

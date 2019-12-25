@@ -35,7 +35,9 @@ class InvalidPluginException : Exception {
 }
 
 fun notAvailableInScript(): Nothing =
-    throw UnsupportedOperationException("This feature is not supported by Plugin Scripts.")
+        throw UnsupportedOperationException("This feature is not supported by Plugin Scripts.")
+fun scriptingNotAvailable(): Nothing =
+        throw UnsupportedOperationException("The scripting feature was disabled in the configuration.")
 
 
 class ProtectedClassException(e: String) : ClassNotFoundException(e)

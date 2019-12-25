@@ -58,7 +58,6 @@ class KtsPluginClassLoader(
         }
         val source: CodeSource? = null
         val clz = defineClass(name, data, 0, data.size, source)
-        logger.info("Success! ${clz.name}")
         val type = Class.forName("kotlin.jvm.functions.Function1")
         val constructor =  clz.getDeclaredConstructor(type, type, type)
         val emptyHandler: PluginInitializer = {}

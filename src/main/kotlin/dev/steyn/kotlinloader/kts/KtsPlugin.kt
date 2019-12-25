@@ -6,6 +6,7 @@ import dev.steyn.kotlinloader.kts.command.Commands
 import dev.steyn.kotlinloader.kts.plugin.KtsPluginBuilder
 import dev.steyn.kotlinloader.kts.plugin.PluginInitializer
 import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
 import org.bukkit.configuration.file.FileConfiguration
@@ -13,7 +14,6 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
-import org.bukkit.plugin.Plugin
 import java.io.InputStream
 
 abstract class KtsPlugin internal constructor(
@@ -41,12 +41,7 @@ abstract class KtsPlugin internal constructor(
     }
 
     fun command(name: String, exec: (CommandSender, Command, String, Array<out String>) -> Boolean): PluginCommand {
-        val constructor = PluginCommand::class.java.getDeclaredConstructor(String::class.java, Plugin::class.java)
-        constructor.isAccessible = true
-        val x = constructor.newInstance(name, this) as PluginCommand
-        x.setExecutor(exec)
-        Commands.commandMap.register(this.description.name, x)
-        return x
+       return Commands.register(this, description.name, name, CommandExecutor { sender, command, label, args -> exec(sender, command, label, args) })
     }
     fun command(name: String, exec: (CommandSender, args: Array<out String>) -> Boolean) : PluginCommand {
         return command(name) { sender, _, _, args ->

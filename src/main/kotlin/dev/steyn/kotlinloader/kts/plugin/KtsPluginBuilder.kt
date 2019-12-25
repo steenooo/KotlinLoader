@@ -37,5 +37,5 @@ class KtsPluginBuilder {
         onLoad = initializer
     }
 
-    internal fun getMainClass() =  if(this::mainClass.isInitialized) mainClass else "ktsplugin.generated.$name"
+    internal fun getMainClass() =  if(this::mainClass.isInitialized) mainClass else "kotlinloader.generated.$name"
 }

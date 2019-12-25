@@ -27,6 +27,10 @@ public class KotlinLoaderPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("kotlinloader")).setExecutor(new KotlinCommand());
     }
 
+    public boolean allowScripting() {
+        return getConfig().getBoolean("kotlin.scripting.enabled");
+    }
+
     public ClassLoader getLoader() {
         return getClassLoader();
     }

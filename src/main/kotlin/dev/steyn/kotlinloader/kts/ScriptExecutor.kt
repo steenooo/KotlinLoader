@@ -10,11 +10,7 @@ class ScriptExecutor<T> (
 
 ){
 
-    fun execute() : T {
-        val script = engine.compile(source)
-
-        return script.eval() as T
-    }
+    fun execute() = engine.compile(source).eval() as T
 
 
 

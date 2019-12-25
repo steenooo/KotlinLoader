@@ -48,10 +48,12 @@ class KotlinPluginLoader(
         if (!file.exists()) {
             throw PluginFileMissingException(file)
         }
-        if (file.name.endsWith(".kts")) {
-            val x = ktsFiles[file] ?: throw InvalidPluginException("Plugin did not load.")
-            x.init()
-            return x.plugin
+        if (KotlinLoaderPlugin.getInstance().allowScripting()) {
+            if (file.name.endsWith(".kts")) {
+                val x = ktsFiles[file] ?: throw InvalidPluginException("Plugin did not load.")
+                x.init()
+                return x.plugin
+            }
         }
         val desc = getPluginDescription(file).asKotlin()
         val scanner = LanguageScanner.createScanner(file, desc)
@@ -99,13 +101,13 @@ class KotlinPluginLoader(
             return
         }
         val loader = plugin.javaClass.classLoader
-            if (loader !is AbstractPluginClassLoader) {
-                throw PluginNotKotlinPluginException(plugin)
-            }
-            if (!loaders.contains(loader)) {
-                loaders.add(loader)
-                server.logger.log(Level.WARNING, "Enabled plugin with unregistered PluginClassLoader ${plugin.getDescription().fullName}")
-            }
+        if (loader !is AbstractPluginClassLoader) {
+            throw PluginNotKotlinPluginException(plugin)
+        }
+        if (!loaders.contains(loader)) {
+            loaders.add(loader)
+            server.logger.log(Level.WARNING, "Enabled plugin with unregistered PluginClassLoader ${plugin.getDescription().fullName}")
+        }
         plugin.logger.info("Enabling ${plugin.description.fullName}..")
         try {
             plugin.enabled = true
@@ -164,24 +166,29 @@ class KotlinPluginLoader(
             KotlinInjector.loader.createRegisteredListeners(listener
                     , plugin)
 
-    override fun getPluginFileFilters(): Array<Pattern> = arrayOf(*KotlinInjector.loader.pluginFileFilters, Pattern.compile("\\.kts$"))
+    override fun getPluginFileFilters(): Array<Pattern> = if (KotlinLoaderPlugin.getInstance().allowScripting())
+        arrayOf(*KotlinInjector.loader.pluginFileFilters, Pattern.compile("\\.kts$"))
+    else
+        arrayOf(*KotlinInjector.loader.pluginFileFilters)
 
     override fun getPluginDescription(file: File): PluginDescriptionFile {
-        try {
-            if (file.name.endsWith(".kts")) {
-                return (ktsFiles[file] ?: let {
-                    val loader = KtsPluginClassLoader(this, KotlinLoaderPlugin::class.java.classLoader, file, server)
-                    ktsFiles[file] = loader
-                    loader
-                }).description.bukkit
+        if (KotlinLoaderPlugin.getInstance().allowScripting()) {
+            try {
+                if (file.name.endsWith(".kts")) {
+                    return (ktsFiles[file] ?: let {
+                        val loader = KtsPluginClassLoader(this, KotlinLoaderPlugin::class.java.classLoader, file, server)
+                        ktsFiles[file] = loader
+                        loader
+                    }).description.bukkit
+                }
+            } catch (e: Exception) {
+                throw UnableToLoadScriptException(file)
             }
-        } catch(e: Exception) {
-           throw UnableToLoadScriptException(file)
         }
         return KotlinInjector.loader.getPluginDescription(file)
     }
 
 
-    val plugins : List<KotlinPlugin>
-    get() = loaders.asSequence().map { it.plugin }.toList()
+    val plugins: List<KotlinPlugin>
+        get() = loaders.asSequence().map { it.plugin }.toList()
 }

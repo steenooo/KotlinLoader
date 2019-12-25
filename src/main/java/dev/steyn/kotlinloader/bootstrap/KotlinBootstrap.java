@@ -23,7 +23,16 @@ public class KotlinBootstrap {
             libraries.mkdirs();
         }
         String repository = config.getString("kotlin.repository");
-        List<String> dependencies = config.getStringList("kotlin.dependencies");
+        List<String> baseDependencies = config.getStringList("kotlin.base.dependencies");
+        download(plugin, libraries, repository, baseDependencies);
+        if(plugin.allowScripting()) {
+            List<String> scriptDependencies = config.getStringList("kotlin.scripting.dependencies");
+            download(plugin, libraries, repository, scriptDependencies);
+        }
+    }
+
+
+    public void download(KotlinLoaderPlugin plugin, File output, String repository, List<String> dependencies) {
         for (String dependency : dependencies) {
             try {
                 String url;
@@ -43,7 +52,7 @@ public class KotlinBootstrap {
                 }
 
                 URL x = new URL(url);
-                File file = new File(libraries, name);
+                File file = new File(output, name);
                 if (!file.exists()) {
                     file.createNewFile();
                     plugin.getLogger().info(String.format("Downloading %s %s..", name, url));
@@ -63,8 +72,6 @@ public class KotlinBootstrap {
                 e.printStackTrace();
             }
         }
-
-
     }
 
 

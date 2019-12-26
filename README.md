@@ -80,7 +80,6 @@ plugin {
     val message = "${BLUE}Welcome to your server {name}!"
 
     enable {
-    	logger.info(javaClass.name)
         listen<PlayerJoinEvent> {
             joinMessage = message.replace("{name}", player.name)
         }

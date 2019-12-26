@@ -3,6 +3,7 @@ package dev.steyn.kotlinloader.jar
 import com.google.common.io.ByteStreams
 import dev.steyn.kotlinloader.Kotlin
 import dev.steyn.kotlinloader.KotlinPlugin
+import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
@@ -56,6 +57,9 @@ class KotlinPluginClassLoader(
     init {
         val mainClass = Class.forName(desc.main)
         val useKts = mainClass.getAnnotation(Kotlin::class.java)?.ktsConfig ?: false
+        if(useKts && !KotlinLoaderPlugin.getInstance().allowScripting()) {
+            throw InvalidPluginException("Plugin requires KotlinScript while the server has this feature disabled.")
+        }
         plugin.init(file, folder, this, pluginLoader, desc, pluginLoader.server, useKts)
     }
 

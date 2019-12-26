@@ -1,11 +1,10 @@
 package dev.steyn.kotlinloader
 
-import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
-import dev.steyn.kotlinloader.exception.scriptingNotAvailable
+import dev.steyn.kotlinloader.exception.ensureScriptingAvailable
 import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
-import dev.steyn.kotlinloader.kts.ScriptExecutor
+import dev.steyn.kotlinloader.kts.executeScript
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
@@ -133,8 +132,6 @@ abstract class KotlinPlugin : PluginBase() {
     override fun reloadConfig() { //load from config file in plugin directory if present - otherwise load values from the default config (included in the jar)
         if(!useKtsConfig) {
             reloadConfig0()
-        } else {
-            readKtsConfig<Any>(_configFile)
         }
     }
 
@@ -212,26 +209,15 @@ abstract class KotlinPlugin : PluginBase() {
     }
 
     fun <T> getKtsConfig() : T? {
-        if(!KotlinLoaderPlugin.getInstance().allowScripting()) {
-            scriptingNotAvailable()
-        }
-        return ktsConfig as? T
+        ensureScriptingAvailable()
+        return ktsConfig as T?
     }
 
-    fun <T> readKtsConfig(file: File) : T? {
-        if(!KotlinLoaderPlugin.getInstance().allowScripting()) {
-            scriptingNotAvailable()
-        }
-        var result: T? = null
-        Thread {
-            result = FileReader(file).use {
-                val exec = ScriptExecutor<T>(it)
-                exec.execute()
+    fun <T> readKtsConfig(file: File, baseClass: Class<T>) : T? {
+        ensureScriptingAvailable()
+        val result: T? = FileReader(file).use {
+                executeScript(it, javaClass.classLoader, baseClass.name)
             }
-        }.run {
-            start()
-            join()
-        }
         ktsConfig = result
         return result
     }

@@ -10,7 +10,7 @@ import java.io.File
 import java.util.jar.JarFile
 
 
-class LanguageScanner(val data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
+class LanguageScanner(data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
 
 
     companion object {
@@ -45,6 +45,7 @@ class LanguageScanner(val data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor? {
         if(descriptor.equals(KOTLIN_ANNOTATION)) {
             hasKotlinAnnotation = true
+            //We'll assume that this class is a subclass of KotlinPlugin
         }
         return super.visitAnnotation(descriptor, visible)
     }

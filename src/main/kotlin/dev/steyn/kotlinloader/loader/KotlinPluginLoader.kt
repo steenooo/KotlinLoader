@@ -182,7 +182,8 @@ class KotlinPluginLoader(
                     }).description.bukkit
                 }
             } catch (e: Exception) {
-                throw UnableToLoadScriptException(file)
+                e.printStackTrace()
+                throw UnableToLoadScriptException(e, file)
             }
         }
         return KotlinInjector.loader.getPluginDescription(file)

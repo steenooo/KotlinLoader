@@ -1,5 +1,6 @@
 package dev.steyn.kotlinloader.exception
 
+import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import org.bukkit.plugin.InvalidDescriptionException
 import org.bukkit.plugin.Plugin
 import java.io.File
@@ -23,7 +24,7 @@ class PluginNotKotlinPluginException(plugin: Plugin) : KotlinPluginException("${
 class PluginFileMissingException(file: File) : KotlinPluginException("Unable to find ${file.path}")
 
 //To make sure we don't terminate the loading process this inherits from InvalidDescriptionException.
-class UnableToLoadScriptException(file: File): InvalidDescriptionException("Unable to execute script ${file.path}")
+class UnableToLoadScriptException(cause: Throwable, file: File): InvalidDescriptionException("Unable to execute script ${file.path}")
 class InvalidPluginException : Exception {
     constructor() : super()
 
@@ -39,5 +40,10 @@ fun notAvailableInScript(): Nothing =
 fun scriptingNotAvailable(): Nothing =
         throw UnsupportedOperationException("The scripting feature was disabled in the configuration.")
 
+fun ensureScriptingAvailable() {
+    if(!KotlinLoaderPlugin.getInstance().allowScripting()) {
+        scriptingNotAvailable()
+    }
+}
 
 class ProtectedClassException(e: String) : ClassNotFoundException(e)

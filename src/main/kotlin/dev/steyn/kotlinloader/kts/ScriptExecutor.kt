@@ -1,18 +1,53 @@
 package dev.steyn.kotlinloader.kts
 
 import java.io.Reader
-import javax.script.Compilable
 import javax.script.ScriptEngineManager
+import kotlin.script.experimental.api.defaultImports
+import kotlin.script.experimental.api.hostConfiguration
+import kotlin.script.experimental.api.with
+import kotlin.script.experimental.host.with
+import kotlin.script.experimental.jvm.baseClassLoader
+import kotlin.script.experimental.jvm.jvm
+import kotlin.script.experimental.jvmhost.jsr223.KotlinJsr223ScriptEngineImpl
 
-class ScriptExecutor<T> (
+internal class ScriptExecutor<T>(
         val source: Reader,
-        val engine: Compilable = ScriptEngineManager().getEngineByExtension("kts") as Compilable
+        loader: ClassLoader,
+        vararg val imports: String
+) {
 
-){
+    val engine by lazy {
+        val x = ScriptEngineManager().getEngineByExtension("kts") as KotlinJsr223ScriptEngineImpl
+        val compile = x.compilationConfiguration.with {
+            this[defaultImports] = listOf(
+                    *imports
+            )
+            this[hostConfiguration].with{
+                this[jvm.baseClassLoader] = loader
+            }
+        }
+        val eval = x.evaluationConfiguration.with {
+            this[hostConfiguration].with {
+                this[jvm.baseClassLoader] = loader
+            }
+        }
+
+        val result = KotlinJsr223ScriptEngineImpl(x.factory, compile, eval, x.getScriptArgs)
+
+        result
+    }
 
     fun execute() = engine.compile(source).eval() as T
 
-
-
-
+}
+fun <T> executeScript(src: Reader, loader: ClassLoader, vararg  import: String) : T? {
+    var result: T? = null
+    Thread {
+        Thread.currentThread().contextClassLoader = loader
+        result = ScriptExecutor<T>(src, loader, *import).execute()
+    }.run {
+        start()
+        join()
+    }
+    return result
 }

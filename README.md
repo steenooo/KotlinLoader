@@ -67,7 +67,6 @@ It is currently not possible to import other scripts.
 
 Example Script
 ````kotlin
-import dev.steyn.kotlinloader.kts.plugin
 import org.bukkit.ChatColor.BLUE
 import org.bukkit.command.CommandSender
 import org.bukkit.event.player.PlayerJoinEvent
@@ -92,7 +91,7 @@ plugin {
             permission = "joinmessage.test"
             aliases = listOf("tjm", "testmessage")
         }
-    }
+    }   
 }
 ````
 

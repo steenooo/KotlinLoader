@@ -59,8 +59,8 @@ Maven
 </repository>
 
 <dependency>
-    <groupId>com.github.steenooo.KotlinLoader</groupId>
-    <artifactId>kotlin-loader</artifactId>
+    <groupId>com.github.steenooo</groupId>
+    <artifactId>KotlinLoader</artifactId>
     <version>1.0.1</version>
     <scope>provided</scope>
 </dependency>

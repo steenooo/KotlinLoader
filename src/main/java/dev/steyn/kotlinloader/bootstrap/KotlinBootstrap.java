@@ -56,6 +56,7 @@ public class KotlinBootstrap {
                 if (!file.exists()) {
                     file.createNewFile();
                     plugin.getLogger().info(String.format("Downloading %s %s..", name, url));
+
                     try (InputStream inputStream = x.openStream()) {
                         try (BufferedInputStream in = new BufferedInputStream(inputStream)) {
                             try (FileOutputStream outputStream = new FileOutputStream(file)) {
@@ -65,6 +66,7 @@ public class KotlinBootstrap {
                                 }
                             }
                         }
+
                     }
                 }
                 addFileToLoader(Bukkit.class.getClassLoader(), file);

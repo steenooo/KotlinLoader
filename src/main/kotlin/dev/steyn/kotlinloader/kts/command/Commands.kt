@@ -8,6 +8,7 @@ import org.bukkit.command.SimpleCommandMap
 import org.bukkit.plugin.Plugin
 
 object Commands {
+
     val commandMap by reflectLazy<SimpleCommandMap>(Bukkit.getServer(), Bukkit.getServer().javaClass.getDeclaredField("commandMap"))
     val constructor by lazy {
         val constructor = PluginCommand::class.java.getDeclaredConstructor(String::class.java, Plugin::class.java)

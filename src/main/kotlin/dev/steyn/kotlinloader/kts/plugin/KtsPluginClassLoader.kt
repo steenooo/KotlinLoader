@@ -19,7 +19,7 @@ class KtsPluginClassLoader(
 
 
     companion object {
-        val defaultImports = arrayOf(
+        val DEFAULT_IMPORTS = arrayOf(
                 "dev.steyn.kotlinloader.kts.plugin",
                 "dev.steyn.kotlinloader.kts.with",
                 "dev.steyn.kotlinloader.kts.listen",
@@ -30,7 +30,7 @@ class KtsPluginClassLoader(
 
     private val builder: KtsPluginBuilder = FileReader(file).use {
         executeScript(it, this,
-                *defaultImports)!!
+                *DEFAULT_IMPORTS)!!
     }
     val description: KtsPluginDescription
     val folder: File
@@ -38,7 +38,7 @@ class KtsPluginClassLoader(
 
     init {
         description = KtsPluginDescription(builder)
-            folder = File(file.parent, builder.name)
+        folder = File(file.parent, builder.name)
 
     }
 
@@ -54,7 +54,7 @@ class KtsPluginClassLoader(
             val pkgName = name.substring(0, dot)
             if (getPackage(pkgName) == null) {
                 try {
-                        definePackage(pkgName, null, null, null, null, null, null, null)
+                    definePackage(pkgName, null, null, null, null, null, null, null)
                 } catch (ex: IllegalArgumentException) {
                     checkNotNull(getPackage(pkgName)) { "Cannot find package $pkgName" }
                 }
@@ -63,10 +63,11 @@ class KtsPluginClassLoader(
         val source: CodeSource? = null
         val clz = defineClass(name, data, 0, data.size, source)
         val type = Class.forName("kotlin.jvm.functions.Function1")
-        val constructor =  clz.getDeclaredConstructor(type, type, type)
+        val constructor = clz.getDeclaredConstructor(type, type, type)
         val emptyHandler: PluginInitializer = {}
         constructor.isAccessible = true
-        this.plugin = constructor.newInstance(builder.onEnable ?: emptyHandler, builder.onDisable ?: emptyHandler, builder.onLoad ?: emptyHandler) as KtsPlugin
+        this.plugin = constructor.newInstance(builder.onEnable ?: emptyHandler, builder.onDisable
+                ?: emptyHandler, builder.onLoad ?: emptyHandler) as KtsPlugin
         plugin.init(file, folder, this, pluginLoader, description, server, false)
     }
 

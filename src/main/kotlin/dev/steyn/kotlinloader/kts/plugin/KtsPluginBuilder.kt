@@ -7,6 +7,7 @@ import org.bukkit.plugin.PluginLoadOrder
 
 
 typealias PluginInitializer = KtsPlugin.() -> Unit
+
 class KtsPluginBuilder {
 
     internal var onEnable: PluginInitializer? = null

@@ -47,18 +47,20 @@ class KtsPluginDescription(
     override val bukkit: PluginDescriptionFile by lazy {
 
         val desc = PluginDescriptionFile(name, version, main)
-
-//        val map = hashMapOf(
-//                "name" to name,
-//                "version" to version,
-//                "main" to main,
-//                "website" to website,
-//                "description" to description,
-//                "load" to order,
-//                "authors" to authors,
-//                "lazyPermissions" to lazyPermissions,
-//                "prefix" to prefix
-//        )
+        val map = hashMapOf(
+                "name" to name,
+                "version" to version,
+                "main" to main,
+                "website" to website,
+                "description" to description,
+                "load" to order,
+                "authors" to authors,
+                "lazyPermissions" to lazyPermissions,
+                "prefix" to prefix
+        )
+        val loadMap = PluginDescriptionFile::class.java.getDeclaredMethod("loadMap")
+        loadMap.isAccessible = true
+        loadMap(desc, map)
 
         desc
     }

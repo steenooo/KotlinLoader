@@ -18,7 +18,7 @@ fun plugin(x : KtsPluginBuilder.() -> Unit) : KtsPluginBuilder {
     x(builder)
     return builder
 }
-inline fun <reified E : Event> KtsPlugin.listen(priority: EventPriority = EventPriority.NORMAL, noinline handler: E.() -> Unit) {
+inline fun <reified E : Event> KtsPlugin.listen(priority: EventPriority = EventPriority.NORMAL, crossinline handler: E.() -> Unit) {
     val executor = EventExecutor { _, event -> handler(event as E) }
     server.pluginManager.registerEvent(E::class.java, this, priority, executor, this)
 }

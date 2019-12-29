@@ -24,7 +24,7 @@ class PluginNotKotlinPluginException(plugin: Plugin) : KotlinPluginException("${
 class PluginFileMissingException(file: File) : KotlinPluginException("Unable to find ${file.path}")
 
 //To make sure we don't terminate the loading process this inherits from InvalidDescriptionException.
-class UnableToLoadScriptException(cause: Throwable, file: File): InvalidDescriptionException("Unable to execute script ${file.path}")
+class ScriptLoadingFailedException(cause: Throwable, file: File): InvalidDescriptionException("Unable to execute script ${file.path}")
 class InvalidPluginException : Exception {
     constructor() : super()
 

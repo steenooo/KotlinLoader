@@ -7,7 +7,7 @@ import dev.steyn.kotlinloader.desc.asKotlin
 import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
-import dev.steyn.kotlinloader.exception.UnableToLoadScriptException
+import dev.steyn.kotlinloader.exception.ScriptLoadingFailedException
 import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.kts.plugin.KtsPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
@@ -183,7 +183,7 @@ class KotlinPluginLoader(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                throw UnableToLoadScriptException(e, file)
+                throw ScriptLoadingFailedException(e, file)
             }
         }
         return KotlinInjector.loader.getPluginDescription(file)

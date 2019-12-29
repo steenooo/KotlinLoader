@@ -49,22 +49,21 @@ abstract class KotlinPlugin : PluginBase() {
     }
 
     fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server, useKtsConfig: Boolean) {
-       this.useKtsConfig = useKtsConfig
+        this.useKtsConfig = useKtsConfig
         this._pluginDescriptionFile = desc
         this._file = file
         this._dataFolder = dataFolder
         this._loader = loader
         this._pluginLoader = pluginLoader
         this._server = server
-        this._configFile = File(dataFolder, "config${if(useKtsConfig) ".kts" else ".yml"}")
+        this._configFile = File(dataFolder, "config${if (useKtsConfig) ".kts" else ".yml"}")
 
-        if(!isScript()) {
+        if (!isScript()) {
             this._config = reloadConfig0()
         }
 
         this._logger = PluginLogger(this)
     }
-
 
 
     private var useKtsConfig: Boolean = false
@@ -130,7 +129,7 @@ abstract class KotlinPlugin : PluginBase() {
 
 
     override fun reloadConfig() { //load from config file in plugin directory if present - otherwise load values from the default config (included in the jar)
-        if(!useKtsConfig) {
+        if (!useKtsConfig) {
             reloadConfig0()
         }
     }
@@ -208,16 +207,16 @@ abstract class KotlinPlugin : PluginBase() {
         }
     }
 
-    fun <T> getKtsConfig() : T? {
+    fun <T> getKtsConfig(): T? {
         ensureScriptingAvailable()
         return ktsConfig as T?
     }
 
-    fun <T> readKtsConfig(file: File, baseClass: Class<T>) : T? {
+    fun <T> readKtsConfig(file: File, baseClass: Class<T>): T? {
         ensureScriptingAvailable()
         val result: T? = FileReader(file).use {
-                executeScript(it, javaClass.classLoader, baseClass.name)
-            }
+            executeScript(it, javaClass.classLoader, baseClass.name)
+        }
         ktsConfig = result
         return result
     }

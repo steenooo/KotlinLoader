@@ -12,8 +12,8 @@ import kotlin.script.experimental.jvmhost.jsr223.KotlinJsr223ScriptEngineImpl
 
 internal class ScriptExecutor<T>(
         val source: Reader,
-        loader: ClassLoader,
-        vararg val imports: String
+        vararg val imports: String,
+        loader: ClassLoader
 ) {
 
     val engine by lazy {
@@ -40,11 +40,11 @@ internal class ScriptExecutor<T>(
     fun execute() = engine.compile(source).eval() as T
 
 }
-fun <T> executeScript(src: Reader, loader: ClassLoader, vararg  import: String) : T? {
+fun <T> executeScript(src: Reader, loader: ClassLoader, vararg import: String) : T? {
     var result: T? = null
     Thread {
         Thread.currentThread().contextClassLoader = loader
-        result = ScriptExecutor<T>(src, loader, *import).execute()
+        result = ScriptExecutor<T>(src, *import, loader = loader).execute()
     }.run {
         start()
         join()

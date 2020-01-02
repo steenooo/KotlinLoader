@@ -48,7 +48,7 @@ abstract class KotlinPlugin : PluginBase() {
         }
     }
 
-    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server, useKtsConfig: Boolean) {
+    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server, useKtsConfig: Boolean, configName: String = "") {
         this.useKtsConfig = useKtsConfig
         this._pluginDescriptionFile = desc
         this._file = file
@@ -56,13 +56,11 @@ abstract class KotlinPlugin : PluginBase() {
         this._loader = loader
         this._pluginLoader = pluginLoader
         this._server = server
-        this._configFile = File(dataFolder, "config${if (useKtsConfig) ".kts" else ".yml"}")
+        this._configFile = File(dataFolder, if(useKtsConfig) "config.kts" else "config.yml")
 
         if (!isScript()) {
             this._config = reloadConfig0()
         }
-
-        this._logger = PluginLogger(this)
     }
 
 
@@ -78,7 +76,9 @@ abstract class KotlinPlugin : PluginBase() {
     private var ktsConfig: Any? = null
     private lateinit var _configFile: File
     private var _config: FileConfiguration? = null
-    private lateinit var _logger: PluginLogger
+    val logger: PluginLogger by lazy {
+        PluginLogger(this)
+    }
 
     internal var enabled: Boolean
         set(value) {
@@ -100,9 +100,6 @@ abstract class KotlinPlugin : PluginBase() {
 
 
     override fun isEnabled() = enabled
-
-    override fun getLogger() = _logger
-
 
     override fun setNaggable(canNag: Boolean) {
         _naggable = canNag

@@ -41,7 +41,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <artifactId>spigot</artifactId>
+      <artifactId>spigot-api</artifactId>
       <groupId>org.spigotmc</groupId>
       <scope>provided</scope>
       <version>1.14.4-R0.1-SNAPSHOT</version>

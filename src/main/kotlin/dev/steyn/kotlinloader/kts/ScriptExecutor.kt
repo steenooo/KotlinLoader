@@ -1,53 +1,61 @@
 package dev.steyn.kotlinloader.kts
 
-import java.io.Reader
-import javax.script.ScriptEngineManager
-import kotlin.script.experimental.api.defaultImports
-import kotlin.script.experimental.api.hostConfiguration
-import kotlin.script.experimental.api.with
-import kotlin.script.experimental.host.with
+import dev.steyn.kotlinloader.kts.plugin.KtsPluginBuilder
+import java.io.File
+import kotlin.script.experimental.api.*
+import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.baseClassLoader
 import kotlin.script.experimental.jvm.jvm
-import kotlin.script.experimental.jvmhost.jsr223.KotlinJsr223ScriptEngineImpl
+import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
+import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 
 internal class ScriptExecutor<T>(
-        val source: Reader,
+        val file: File,
         vararg val imports: String,
-        loader: ClassLoader
+        val loader: ClassLoader
 ) {
 
-    val engine by lazy {
-        val x = ScriptEngineManager().getEngineByExtension("kts") as KotlinJsr223ScriptEngineImpl
-        val compile = x.compilationConfiguration.with {
-            this[defaultImports] = listOf(
-                    *imports
-            )
-            this[hostConfiguration].with{
-                this[jvm.baseClassLoader] = loader
-            }
+    fun execute0(): ResultWithDiagnostics<EvaluationResult> {
+        val scriptDef = createJvmCompilationConfigurationFromTemplate<KtsPluginBuilder> {
+            defaultImports(arrayListOf(*imports))
         }
-        val eval = x.evaluationConfiguration.with {
-            this[hostConfiguration].with {
-                this[jvm.baseClassLoader] = loader
+        val evaluationEnv = ScriptEvaluationConfiguration {
+            jvm {
+                baseClassLoader(loader)
             }
+            constructorArgs(emptyArray<String>())
+            enableScriptsInstancesSharing()
         }
-
-        val result = KotlinJsr223ScriptEngineImpl(x.factory, compile, eval, x.getScriptArgs)
-
-        result
+        return BasicJvmScriptingHost().eval(file.toScriptSource(), scriptDef, evaluationEnv)
     }
 
-    fun execute() = engine.compile(source).eval() as T
+    fun execute(): T? = when (val result = execute0()) {
+        is ResultWithDiagnostics.Failure -> TODO()
+        is ResultWithDiagnostics.Success<EvaluationResult> -> {
+            with(result.value.returnValue) {
+                when (this) {
+                    is ResultValue.Value -> {
+                        this.value as T?
+                    }
+                    is ResultValue.Error -> {
+                        throw this.error
+                    }
+                    else -> TODO()
+                }
+            }
+        }
+    }
 
 }
-fun <T> executeScript(src: Reader, loader: ClassLoader, vararg import: String) : T? {
+
+fun <T> executeScript(src: File, loader: ClassLoader, vararg import: String): T? {
     var result: T? = null
-    Thread {
-        Thread.currentThread().contextClassLoader = loader
-        result = ScriptExecutor<T>(src, *import, loader = loader).execute()
-    }.run {
-        start()
-        join()
-    }
+    //Thread {
+    //  Thread.currentThread().contextClassLoader = loader
+    result = ScriptExecutor<T>(src, *import, loader = loader).execute()
+    //}.run {
+    // start()
+    //  join()
+    //}
     return result
 }

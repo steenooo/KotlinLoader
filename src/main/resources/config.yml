@@ -8,7 +8,7 @@ kotlin:
       - maven:org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${kotlinx.coroutines.version}:kotlinx-coroutines-jdk.jar
       - maven:org.jetbrains.kotlinx:kotlinx-coroutines-core:${kotlinx.coroutines.version}:kotlinx-coroutines-core.jar
   scripting:
-    enabled: true
+    enabled: false
     dependencies:
     - maven:org.jetbrains.kotlin:kotlin-script-runtime:${kotlin.version}:script-runtime.jar
     - maven:org.jetbrains.kotlin:kotlin-script-util:${kotlin.version}:script-util.jar

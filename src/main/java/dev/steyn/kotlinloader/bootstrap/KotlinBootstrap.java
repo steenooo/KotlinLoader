@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -23,11 +24,25 @@ public class KotlinBootstrap {
             libraries.mkdirs();
         }
         String repository = config.getString("kotlin.repository");
+        File version = new File(libraries, plugin.getDescription().getVersion());
+
+        if(!version.exists()) {
+            version.mkdirs();
+        }
+        File base = new File(version, "base");
+        if(!base.exists()) {
+            base.mkdirs();
+        }
         List<String> baseDependencies = config.getStringList("kotlin.base.dependencies");
-        download(plugin, libraries, repository, baseDependencies);
+        download(plugin, version, repository, baseDependencies);
         if(plugin.allowScripting()) {
             List<String> scriptDependencies = config.getStringList("kotlin.scripting.dependencies");
-            download(plugin, libraries, repository, scriptDependencies);
+
+            File scripting = new File(version, "scripting");
+            if(!scripting.exists()) {
+                scripting.mkdirs();
+            }
+            download(plugin, scripting, repository, scriptDependencies);
         }
     }
 
@@ -69,7 +84,7 @@ public class KotlinBootstrap {
 
                     }
                 }
-                addFileToLoader(Bukkit.class.getClassLoader(), file);
+                addFileToLoader(KotlinLoaderPlugin.class.getClassLoader(), file);
             } catch (Exception e) {
                 e.printStackTrace();
             }

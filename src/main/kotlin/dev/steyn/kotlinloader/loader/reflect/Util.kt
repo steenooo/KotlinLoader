@@ -10,19 +10,19 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 
-fun Field.makeMutable(): Boolean {
-    try {
-        val modifiersField = javaClass.getDeclaredField("modifiers")
-        modifiersField.isAccessible = true
-
-        modifiersField.setInt(this, (modifiers and Modifier.FINAL.inv()))
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return false
-
-    }
-    return true
-}
+//fun Field.makeMutable(): Boolean {
+//    try {
+//        val modifiersField = javaClass.getDeclaredField("modifiers")
+//        modifiersField.isAccessible = true
+//
+//        modifiersField.setInt(this, (modifiers and Modifier.FINAL.inv()))
+//    } catch (e: Exception) {
+//        e.printStackTrace()
+//        return false
+//
+//    }
+//    return true
+//}
 
 
 private fun JarFile.getClass(name: String): JarEntry {
@@ -68,10 +68,11 @@ class LazyReflectiveFieldDelegation<R : Any?>(val target: Any?, val field: Field
     }
 }
 
-class MutableReflectiveFieldDelegation<R : Any?>(target: Any?, field: Field) : ReflectiveFieldDelegation<R>(target, field), ReadWriteProperty<Any, R> {
-    init {
-        field.makeMutable()
-    }
+class MutableReflectiveFieldDelegation<R : Any?>(target: Any?, field: Field) : ReflectiveFieldDelegation<R>(target, field), ReadWriteProperty<Any, R>  {
+// Not sure why this no longer necessary, but it seems to work.
+//    init {
+//        field.makeMutable()
+//    }
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: R) {
         field.set(target, value)

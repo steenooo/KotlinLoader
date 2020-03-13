@@ -10,7 +10,6 @@ class KotlinLoader(val plugin: KotlinLoaderPlugin) {
 
 
     fun load() {
-
         val manager = Bukkit.getPluginManager()
         manager.registerInterface(KotlinPluginLoader::class.java)
         val pluginsFolder = File(plugin.dataFolder.parent, "kotlin")

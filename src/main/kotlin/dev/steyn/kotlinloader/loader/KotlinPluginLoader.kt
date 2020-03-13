@@ -4,12 +4,9 @@ import dev.steyn.kotlinloader.KotlinPlugin
 import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.desc.asKotlin
-import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
-import dev.steyn.kotlinloader.exception.ScriptLoadingFailedException
 import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
-import dev.steyn.kotlinloader.kts.plugin.KtsPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
 import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
 import org.bukkit.Server
@@ -34,7 +31,6 @@ class KotlinPluginLoader(
 
     private val loaders: MutableList<AbstractPluginClassLoader> = CopyOnWriteArrayList<AbstractPluginClassLoader>()
     private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
-    private val ktsFiles = ConcurrentHashMap<File, KtsPluginClassLoader>()
 
 
     init {
@@ -47,13 +43,6 @@ class KotlinPluginLoader(
     override fun loadPlugin(file: File): Plugin {
         if (!file.exists()) {
             throw PluginFileMissingException(file)
-        }
-        if (KotlinLoaderPlugin.getInstance().allowScripting()) {
-            if (file.name.endsWith(".kts")) {
-                val x = ktsFiles[file] ?: throw InvalidPluginException("Plugin did not load.")
-                x.init()
-                return x.plugin
-            }
         }
         val desc = getPluginDescription(file).asKotlin()
         val scanner = LanguageScanner.createScanner(file, desc)
@@ -172,20 +161,6 @@ class KotlinPluginLoader(
         arrayOf(*KotlinInjector.loader.pluginFileFilters)
 
     override fun getPluginDescription(file: File): PluginDescriptionFile {
-        if (KotlinLoaderPlugin.getInstance().allowScripting()) {
-            try {
-                if (file.name.endsWith(".kts")) {
-                    return (ktsFiles[file] ?: let {
-                        val loader = KtsPluginClassLoader(this, KotlinLoaderPlugin::class.java.classLoader, file, server)
-                        ktsFiles[file] = loader
-                        loader
-                    }).description.bukkit
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                throw ScriptLoadingFailedException(e, file)
-            }
-        }
         return KotlinInjector.loader.getPluginDescription(file)
     }
 

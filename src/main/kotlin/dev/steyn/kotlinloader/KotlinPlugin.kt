@@ -2,9 +2,7 @@ package dev.steyn.kotlinloader
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
-import dev.steyn.kotlinloader.exception.ensureScriptingAvailable
 import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
-import dev.steyn.kotlinloader.kts.executeScript
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
@@ -21,9 +19,10 @@ import java.net.URLConnection
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
-abstract class KotlinPlugin : PluginBase() {
+open class KotlinPlugin : PluginBase() {
 
 
     companion object {
@@ -48,23 +47,20 @@ abstract class KotlinPlugin : PluginBase() {
         }
     }
 
-    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server, useKtsConfig: Boolean, configName: String = "") {
-        this.useKtsConfig = useKtsConfig
+    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
         this._pluginDescriptionFile = desc
         this._file = file
         this._dataFolder = dataFolder
         this._loader = loader
         this._pluginLoader = pluginLoader
         this._server = server
-        this._configFile = File(dataFolder, if(useKtsConfig) "config.kts" else "config.yml")
+        this._configFile = File(dataFolder, "config.yml")
 
         if (!isScript()) {
             this._config = reloadConfig0()
         }
     }
 
-
-    private var useKtsConfig: Boolean = false
     private lateinit var _pluginDescriptionFile: KotlinPluginDescription
     private lateinit var _file: File
     private lateinit var _dataFolder: File
@@ -73,10 +69,9 @@ abstract class KotlinPlugin : PluginBase() {
     private lateinit var _loader: AbstractPluginClassLoader
     private lateinit var _pluginLoader: KotlinPluginLoader
     private lateinit var _server: Server
-    private var ktsConfig: Any? = null
     private lateinit var _configFile: File
     private var _config: FileConfiguration? = null
-    val logger: PluginLogger by lazy {
+    private val _logger: PluginLogger by lazy {
         PluginLogger(this)
     }
 
@@ -93,6 +88,9 @@ abstract class KotlinPlugin : PluginBase() {
         }
         get() = _enabled
 
+    override fun getLogger(): Logger {
+        return _logger
+    }
 
     override fun onLoad() {}
     override fun onEnable() {}
@@ -120,15 +118,14 @@ abstract class KotlinPlugin : PluginBase() {
 
     override fun saveDefaultConfig() {
         if (!_configFile.exists()) {
-            saveResource("config${if (useKtsConfig) ".kts" else ".yml"}", false)
+            saveResource("config.yml", false)
         }
     }
 
 
     override fun reloadConfig() { //load from config file in plugin directory if present - otherwise load values from the default config (included in the jar)
-        if (!useKtsConfig) {
             reloadConfig0()
-        }
+
     }
 
     private fun reloadConfig0(): FileConfiguration {
@@ -202,20 +199,6 @@ abstract class KotlinPlugin : PluginBase() {
         } catch (ex: IOException) {
             logger.log(Level.SEVERE, "Could not save " + outFile.name + " to " + outFile, ex)
         }
-    }
-
-    fun <T> getKtsConfig(): T? {
-        ensureScriptingAvailable()
-        return ktsConfig as T?
-    }
-
-    fun <T> readKtsConfig(file: File, baseClass: Class<T>): T? {
-        ensureScriptingAvailable()
-        val result: T? = FileReader(file).use {
-            executeScript(it, javaClass.classLoader, baseClass.name)
-        }
-        ktsConfig = result
-        return result
     }
 
     open fun isScript() = false

@@ -60,10 +60,8 @@ class KotlinPluginClassLoader(
         try {
 
             val path = name.replace('.', '/') + ".class"
-            println("Loading Classfile by Jar: $name: $path")
             val entry = this.jar.getJarEntry(path)
             if (entry != null) {
-                println("Entry is not null!")
                 var bytes = jar.getInputStream(entry).use {
                     ByteStreams.toByteArray(it)
                 }

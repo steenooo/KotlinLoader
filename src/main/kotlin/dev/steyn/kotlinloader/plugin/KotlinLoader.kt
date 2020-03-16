@@ -22,9 +22,6 @@ class KotlinLoader(val plugin: KotlinLoaderPlugin) {
                 try {
                     it.onLoad()
                 } catch (e: Throwable) {
-                    if (e is Error) {
-                        throw e
-                    }
                     e.printStackTrace()
                 }
             }

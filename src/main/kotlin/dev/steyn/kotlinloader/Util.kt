@@ -1,8 +1,7 @@
-package dev.steyn.kotlinloader.loader.reflect
+package dev.steyn.kotlinloader
 
 import com.google.common.io.ByteStreams
 import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import kotlin.properties.ReadOnlyProperty
@@ -79,4 +78,6 @@ class MutableReflectiveFieldDelegation<R : Any?>(target: Any?, field: Field) : R
     }
 }
 
-
+fun String?.notNullAndEquals(name: String) : Boolean {
+    return this?.contentEquals(name) ?: false
+}

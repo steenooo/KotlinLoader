@@ -1,6 +1,6 @@
 package dev.steyn.kotlinloader.loader
 
-import dev.steyn.kotlinloader.KotlinPlugin
+import dev.steyn.kotlinloader.api.KotlinPlugin
 import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.desc.asKotlin
@@ -121,7 +121,7 @@ class KotlinPluginLoader(
                 try {
                     cached = loader.findClass(name, false)
                 } catch (e: ClassNotFoundException) {
-                }
+                } catch (e: ClassCastException) {}
                 if (cached != null) {
                     break
                 }

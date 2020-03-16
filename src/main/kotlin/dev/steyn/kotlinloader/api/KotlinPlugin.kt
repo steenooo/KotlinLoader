@@ -1,4 +1,4 @@
-package dev.steyn.kotlinloader
+package dev.steyn.kotlinloader.api
 
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException

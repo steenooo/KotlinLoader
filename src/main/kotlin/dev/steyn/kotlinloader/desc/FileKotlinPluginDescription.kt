@@ -1,6 +1,6 @@
 package dev.steyn.kotlinloader.desc
 
-import dev.steyn.kotlinloader.loader.reflect.reflect
+import dev.steyn.kotlinloader.reflect
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.plugin.PluginAwareness

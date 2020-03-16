@@ -1,6 +1,6 @@
 package dev.steyn.kotlinloader.loader
 
-import dev.steyn.kotlinloader.KotlinPlugin
+import dev.steyn.kotlinloader.api.KotlinPlugin
 import dev.steyn.kotlinloader.exception.ProtectedClassException
 import java.net.URL
 import java.net.URLClassLoader
@@ -9,25 +9,46 @@ import java.util.concurrent.ConcurrentHashMap
 abstract class AbstractPluginClassLoader(
         val pluginLoader: KotlinPluginLoader,
         urls: Array<URL>,
-        parent: ClassLoader
-) : URLClassLoader(urls, parent) {
+        private val _parent: ClassLoader
+) : URLClassLoader(urls, null) {
 
     companion object {
         val PROTECTED = arrayOf(
                 "org.bukkit.",
-                "net.minecraft."
+                "net.minecraft.",
+                "dev.steyn.kotlinloader.api.event.Event"
         )
     }
 
     val classes: MutableMap<String, Class<*>> = ConcurrentHashMap()
 
 
-    open fun findClass(name: String, global: Boolean) : Class<*>? {
-        fun byLocal(name: String): Class<*>? = classes[name]
-        fun byGlobal(name: String): Class<*>? = pluginLoader.getClass(name)
-        fun byParent() = super.findClass(name)
-        val result = byLocal(name) ?: (if (global) byGlobal(name) else null) ?: byJar(name)
-        ?: byParent()
+    override fun loadClass(name: String?, resolve: Boolean): Class<*> {
+        return discard<ClassNotFoundException> { super.loadClass(name, resolve) }
+                ?: discard<ClassNotFoundException> { findClass(name!!, true) }
+                ?: discard<ClassNotFoundException> {
+                    discard<ClassCastException> {
+                        _parent.loadClass(name)
+                    }
+                } ?: throw ClassNotFoundException(name)
+    }
+
+
+    private inline fun <reified T : Throwable> discard(handle: () -> Class<*>?): Class<*>? =
+            try {
+                handle()
+            } catch (e: Exception) {
+                if (e !is T) {
+                    throw e
+                }
+                null
+            }
+
+
+    open fun findClass(name: String, global: Boolean): Class<*>? {
+        val result = classes[name] ?: (if (global) pluginLoader.getClass(name) else null)
+        ?: byJar(name)
+        ?: super.findClass(name)
         if (result != null) {
             pluginLoader.registerClass(name, result)
         }
@@ -35,18 +56,18 @@ abstract class AbstractPluginClassLoader(
         return result
     }
 
-    override fun findClass(name: String): Class<*> {
-        if(isIllegal(name)) {
+    override fun findClass(name: String): Class<*>? {
+        if (isIllegal(name)) {
             throw ProtectedClassException(name)
         }
-        return findClass(name, true) ?: throw ClassNotFoundException(name)
+        return null
     }
 
-    open fun byJar(name: String) : Class<*>? = null
+    open fun byJar(name: String): Class<*>? = null
 
-    private fun isIllegal(name: String) : Boolean {
-        for(p in PROTECTED) {
-            if(name.startsWith(p)) {
+    private fun isIllegal(name: String): Boolean {
+        for (p in PROTECTED) {
+            if (name.startsWith(p)) {
                 return true
             }
         }

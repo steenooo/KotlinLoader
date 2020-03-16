@@ -4,6 +4,8 @@ version: ${project.version}
 api-version: 1.13
 load: STARTUP
 author: steenooo
+prefix: KotlinLoader
+description: PluginLoader to allow Plugins to be written in idiomatic Kotlin.
 
 commands:
   kotlinloader:

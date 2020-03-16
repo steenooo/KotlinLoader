@@ -1,8 +1,10 @@
 package dev.steyn.kotlinloader.jar
 
 import com.google.common.io.ByteStreams
-import dev.steyn.kotlinloader.KotlinPlugin
+import dev.steyn.kotlinloader.api.KotlinPlugin
 import dev.steyn.kotlinloader.desc.KotlinPluginDescription
+import dev.steyn.kotlinloader.event.EventManager
+import dev.steyn.kotlinloader.event.EventTranslator
 import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
@@ -29,11 +31,7 @@ class KotlinPluginClassLoader(
         init {
             ClassLoader.registerAsParallelCapable()
         }
-
-
     }
-
-
     override val plugin =
             try {
                 @Suppress("UNCHECKED_CAST")
@@ -44,7 +42,7 @@ class KotlinPluginClassLoader(
                 throw InvalidPluginException("${desc.main} does not extend KotlinPlugin", ex)
             }.let {
                 it.kotlin.objectInstance ?: try {
-                    it.getConstructor().newInstance()
+                    it.getConstructor().newInstance()!!
                 } catch (ex: IllegalAccessException) {
                     throw InvalidPluginException("Unable to find a public constructor", ex)
                 } catch (ex: InstantiationException) {
@@ -60,13 +58,17 @@ class KotlinPluginClassLoader(
 
     override fun byJar(name: String): Class<*>? {
         try {
-            val path = name.replace('.', '/') + "class"
-            val entry = this.jar.getJarEntry(name)
+
+            val path = name.replace('.', '/') + ".class"
+            println("Loading Classfile by Jar: $name: $path")
+            val entry = this.jar.getJarEntry(path)
             if (entry != null) {
+                println("Entry is not null!")
                 var bytes = jar.getInputStream(entry).use {
                     ByteStreams.toByteArray(it)
                 }
                 bytes = pluginLoader.server.unsafe.processClass(desc.bukkit, path, bytes)
+                bytes = EventManager.translateEvent(name, bytes)
 
                 val dot = name.lastIndexOf('.')
                 if (dot != -1) {

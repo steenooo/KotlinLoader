@@ -1,4 +1,4 @@
-package dev.steyn.kotlinloader
+package dev.steyn.kotlinloader.api
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

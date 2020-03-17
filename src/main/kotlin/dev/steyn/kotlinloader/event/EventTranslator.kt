@@ -41,6 +41,10 @@ class EventTranslator(val scanner: EventScanner, visitor: ClassVisitor) : ClassV
     }
 
     override fun visitEnd() {
+        if(scanner.isAbstract) {
+            super.visitEnd()
+            return
+        }
         val constantName = if (scanner.foundConstantConflict) "\$HANDLER_LIST" else "HANDLER_LIST"
         if (!scanner.foundConstant) {
             visitField(ACC_STATIC + ACC_FINAL, constantName, HANDLERLIST_DESCRIPTOR, null, null).apply {
@@ -75,7 +79,7 @@ class EventTranslator(val scanner: EventScanner, visitor: ClassVisitor) : ClassV
                 visitEnd()
             }
         }
-        if (!scanner.foundCInit) {
+        if (!scanner.foundCLInit) {
             visitMethod(ACC_STATIC, "<clinit>", "()V", null, null).apply {
                 visitCode()
                 val l0 = Label()

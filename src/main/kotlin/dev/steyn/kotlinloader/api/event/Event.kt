@@ -12,14 +12,16 @@ import org.bukkit.event.HandlerList
  */
 abstract class Event(async: Boolean) : Event(async) {
 
-    constructor() : this(false)
-
-    init {
-        throw ClassInstanceError("Instantiation of this class is illegal.")
+    companion object {
+        init {
+            throw ClassInstanceError("This class should not exist at runtime.")
+        }
     }
 
-    final override fun getHandlers(): HandlerList {
-        throw ClassInstanceError("Instantiation fo this class is illegal.")
+    constructor() : this(false)
+
+    override fun getHandlers(): HandlerList {
+        throw ClassInstanceError("Instantiation of this class is illegal.")
     }
 
 }

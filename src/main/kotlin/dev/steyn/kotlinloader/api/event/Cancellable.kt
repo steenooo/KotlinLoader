@@ -1,10 +1,5 @@
 package dev.steyn.kotlinloader.api.event
 
-import dev.steyn.kotlinloader.api.KotlinPlugin
-import org.bukkit.Bukkit
-import org.bukkit.event.Event
-import org.bukkit.plugin.PluginManager
-
 interface Cancellable : org.bukkit.event.Cancellable {
 
     companion object {

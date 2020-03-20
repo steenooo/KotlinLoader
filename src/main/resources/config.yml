@@ -7,18 +7,18 @@ kotlin:
       - maven:org.jetbrains.kotlin:kotlin-reflect:${kotlin.version}:kotlin-reflect.jar
       - maven:org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${kotlinx.coroutines.version}:kotlinx-coroutines-jdk.jar
       - maven:org.jetbrains.kotlinx:kotlinx-coroutines-core:${kotlinx.coroutines.version}:kotlinx-coroutines-core.jar
-  scripting:
+  scripting: #Disabled feature
     enabled: false
     dependencies:
-    - maven:org.jetbrains.kotlin:kotlin-script-runtime:${kotlin.version}:script-runtime.jar
-    - maven:org.jetbrains.kotlin:kotlin-script-util:${kotlin.version}:script-util.jar
-    - maven:org.jetbrains.kotlin:kotlin-scripting-jsr223-embeddable:${kotlin.version}:scripting-embeddable.jar
-    - maven:org.jetbrains.kotlin:kotlin-scripting-common:${kotlin.version}:scripting-common.jar
-    - maven:org.jetbrains.kotlin:kotlin-scripting-jvm:${kotlin.version}:scripting-jvm.jar
-    - maven:org.jetbrains.kotlin:kotlin-scripting-jvm-host-embeddable:${kotlin.version}:scripting-jvm-host.jar
-    - maven:org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlin.version}:kotlin-compiler.jar
-    - maven:org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:${kotlin.version}:scripting-compiler.jar
-    - maven:org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:${kotlin.version}:scripting-impl-compiler.jar
-    - maven:org.jetbrains.kotlin:kotlin-daemon-embeddable:${kotlin.version}:scripting-impl-compiler.jar
-    - maven:org.jetbrains.intellij.deps:trove4j:1.0.20181211:trove4j.jar
-    - maven:org.jetbrains:annotations:16.0.1:annotations.jar
+      - maven:org.jetbrains.kotlin:kotlin-script-runtime:${kotlin.version}:script-runtime.jar
+      - maven:org.jetbrains.kotlin:kotlin-script-util:${kotlin.version}:script-util.jar
+      - maven:org.jetbrains.kotlin:kotlin-scripting-jsr223-embeddable:${kotlin.version}:scripting-embeddable.jar
+      - maven:org.jetbrains.kotlin:kotlin-scripting-common:${kotlin.version}:scripting-common.jar
+      - maven:org.jetbrains.kotlin:kotlin-scripting-jvm:${kotlin.version}:scripting-jvm.jar
+      - maven:org.jetbrains.kotlin:kotlin-scripting-jvm-host-embeddable:${kotlin.version}:scripting-jvm-host.jar
+      - maven:org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlin.version}:kotlin-compiler.jar
+      - maven:org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:${kotlin.version}:scripting-compiler.jar
+      - maven:org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:${kotlin.version}:scripting-impl-compiler.jar
+      - maven:org.jetbrains.kotlin:kotlin-daemon-embeddable:${kotlin.version}:scripting-impl-compiler.jar
+      - maven:org.jetbrains.intellij.deps:trove4j:1.0.20181211:trove4j.jar
+      - maven:org.jetbrains:annotations:16.0.1:annotations.jar

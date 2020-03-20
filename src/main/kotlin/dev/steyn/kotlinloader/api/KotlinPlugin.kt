@@ -22,20 +22,35 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.reflect.KClass
 
-open class KotlinPlugin : PluginBase() {
+/**
+ * Represents a KotlinPlugin.
+ * The mainclass of every KotlinPlugin should extend KotlinPlugin somewhere in the hierarchy.
+ *
+ */
+abstract class KotlinPlugin : PluginBase() {
 
 
     companion object {
+
+        /**
+         * Get an instance of a KotlinPlugin
+         */
         @JvmStatic
         inline fun <reified T : KotlinPlugin> getPlugin(): T {
             return getPlugin(T::class)
         }
 
+        /**
+         * Get an instance of a KotlinPlugin
+         */
         @JvmStatic
         fun <T : KotlinPlugin> getPlugin(clazz: KClass<T>): T {
             return clazz.objectInstance ?: getPlugin(clazz.java)
         }
 
+        /**
+         * Get an instance of a KotlinPlugin
+         */
         @JvmStatic
         fun <T : KotlinPlugin> getPlugin(clazz: Class<T>) =
                 (clazz.classLoader as KotlinPluginClassLoader).plugin as T
@@ -104,11 +119,18 @@ open class KotlinPlugin : PluginBase() {
     }
 
 
+    /**
+     * The DataFolder of the Plugin.
+     */
     override fun getDataFolder() = _dataFolder
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) = false
 
+    /**
+     * The FileConfiguration representation of the config.yml file.
+     */
     override fun getConfig() = _config!!
+
     override fun getPluginLoader() = _pluginLoader
 
     override fun getDescription() = _pluginDescriptionFile.bukkit
@@ -125,7 +147,6 @@ open class KotlinPlugin : PluginBase() {
 
     override fun reloadConfig() { //load from config file in plugin directory if present - otherwise load values from the default config (included in the jar)
             reloadConfig0()
-
     }
 
     private fun reloadConfig0(): FileConfiguration {

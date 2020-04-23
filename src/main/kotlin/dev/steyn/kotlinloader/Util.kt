@@ -1,6 +1,7 @@
 package dev.steyn.kotlinloader
 
 import com.google.common.io.ByteStreams
+import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
 import java.lang.reflect.Field
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -80,4 +81,18 @@ class MutableReflectiveFieldDelegation<R : Any?>(target: Any?, field: Field) : R
 
 fun String?.notNullAndEquals(name: String) : Boolean {
     return this?.contentEquals(name) ?: false
+}
+
+private val shouldDebug by lazy {
+    val config = KotlinLoaderPlugin.getInstance().config
+    if(System.getProperty("kotlinloader.debug")?.toBoolean() == true) {
+        true
+    }
+    config.getBoolean("kotlin.debug")
+}
+
+internal fun debug(msg: String) {
+    if(shouldDebug) {
+        KotlinLoaderPlugin.getInstance().logger.info("[DEBUG] $msg")
+    }
 }

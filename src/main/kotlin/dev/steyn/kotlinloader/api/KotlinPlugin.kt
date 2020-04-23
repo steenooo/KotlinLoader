@@ -1,6 +1,5 @@
 package dev.steyn.kotlinloader.api
 
-import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
 import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
@@ -12,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.PluginBase
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLogger
 import java.io.*
 import java.net.URL
@@ -62,7 +62,7 @@ abstract class KotlinPlugin : PluginBase() {
         }
     }
 
-    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
+    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: PluginDescriptionFile, server: Server) {
         this._pluginDescriptionFile = desc
         this._file = file
         this._dataFolder = dataFolder
@@ -76,7 +76,7 @@ abstract class KotlinPlugin : PluginBase() {
         }
     }
 
-    private lateinit var _pluginDescriptionFile: KotlinPluginDescription
+    private lateinit var _pluginDescriptionFile: PluginDescriptionFile
     private lateinit var _file: File
     private lateinit var _dataFolder: File
     private var _enabled: Boolean = false
@@ -133,7 +133,7 @@ abstract class KotlinPlugin : PluginBase() {
 
     override fun getPluginLoader() = _pluginLoader
 
-    override fun getDescription() = _pluginDescriptionFile.bukkit
+    override fun getDescription() = _pluginDescriptionFile
 
 
     override fun getServer() = _server

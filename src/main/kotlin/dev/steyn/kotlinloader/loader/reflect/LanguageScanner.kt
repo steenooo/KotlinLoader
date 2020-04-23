@@ -1,7 +1,7 @@
 package dev.steyn.kotlinloader.loader.reflect
 
-import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.readClass
+import org.bukkit.plugin.PluginDescriptionFile
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES
@@ -20,7 +20,7 @@ class LanguageScanner(data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
         private const val KOTLIN_PLUGIN = "dev/steyn/kotlinloader/api/KotlinPlugin"
         private const val KOTLIN_ANNOTATION = "Ldev/steyn/kotlinloader/api/Kotlin;"
 
-        fun createScanner(file: File, descriptionFile: KotlinPluginDescription): LanguageScanner {
+        fun createScanner(file: File, descriptionFile: PluginDescriptionFile): LanguageScanner {
             return JarFile(file).use { LanguageScanner(it.readClass(descriptionFile.main)) }
         }
 

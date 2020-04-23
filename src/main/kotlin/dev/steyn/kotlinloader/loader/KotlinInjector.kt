@@ -17,7 +17,7 @@ object KotlinInjector {
         SimplePluginManager::class.java.getDeclaredField("fileAssociations")
     }
 
-    val loader: JavaPluginLoader by lazy<JavaPluginLoader> {
+    val loader: JavaPluginLoader by lazy {
         for (loader in fileAssociations.values) {
             if (loader is JavaPluginLoader) {
                 return@lazy loader

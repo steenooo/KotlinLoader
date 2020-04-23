@@ -48,8 +48,6 @@ class EventScanner : ClassVisitor(Opcodes.ASM7) {
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor? {
         if (descriptor.notNullAndEquals(GENHANDLERS_DESC)) {
             read = true
-        } else {
-            println("GenHandlers is not matched. It was $descriptor")
         }
         return super.visitAnnotation(descriptor, visible)
     }

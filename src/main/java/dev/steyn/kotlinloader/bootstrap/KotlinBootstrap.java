@@ -33,17 +33,8 @@ public class KotlinBootstrap {
         if(!base.exists()) {
             base.mkdirs();
         }
-        List<String> baseDependencies = config.getStringList("kotlin.base.dependencies");
+        List<String> baseDependencies = config.getStringList("kotlin.dependencies");
         download(plugin, version, repository, baseDependencies);
-        if(plugin.allowScripting()) {
-            List<String> scriptDependencies = config.getStringList("kotlin.scripting.dependencies");
-
-            File scripting = new File(version, "scripting");
-            if(!scripting.exists()) {
-                scripting.mkdirs();
-            }
-            download(plugin, scripting, repository, scriptDependencies);
-        }
     }
 
 

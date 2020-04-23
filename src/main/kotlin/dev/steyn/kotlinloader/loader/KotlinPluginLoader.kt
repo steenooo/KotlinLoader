@@ -1,9 +1,7 @@
 package dev.steyn.kotlinloader.loader
 
 import dev.steyn.kotlinloader.api.KotlinPlugin
-import dev.steyn.kotlinloader.bootstrap.KotlinLoaderPlugin
-import dev.steyn.kotlinloader.desc.KotlinPluginDescription
-import dev.steyn.kotlinloader.desc.asKotlin
+import dev.steyn.kotlinloader.debug
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
 import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
@@ -41,10 +39,11 @@ class KotlinPluginLoader(
 
 
     override fun loadPlugin(file: File): Plugin {
+        debug("Attempting to load plugin for file ${file.name}")
         if (!file.exists()) {
             throw PluginFileMissingException(file)
         }
-        val desc = getPluginDescription(file).asKotlin()
+        val desc = getPluginDescription(file)
         val scanner = LanguageScanner.createScanner(file, desc)
         if (scanner.isKotlinPlugin()) {
             return this.loadJarPlugin(file, desc)
@@ -53,7 +52,7 @@ class KotlinPluginLoader(
     }
 
 
-    private fun loadJarPlugin(file: File, desc: KotlinPluginDescription): Plugin {
+    private fun loadJarPlugin(file: File, desc: PluginDescriptionFile): Plugin {
         val parent = file.parentFile
         val dataFolder = File(parent, desc.name)
         val loader = KotlinPluginClassLoader(
@@ -64,6 +63,7 @@ class KotlinPluginLoader(
     }
 
     override fun disablePlugin(plugin: Plugin) {
+        debug("Attempting to disable ${plugin.name}")
         if (plugin !is KotlinPlugin) {
             throw PluginNotKotlinPluginException(plugin)
         }
@@ -78,11 +78,11 @@ class KotlinPluginLoader(
                 unregisterClass(it)
             }
         }
-
         plugin.enabled = false
     }
 
     override fun enablePlugin(plugin: Plugin) {
+        debug("Attempting to enable ${plugin.name}")
         if (plugin !is KotlinPlugin) {
             throw PluginNotKotlinPluginException(plugin)
         }
@@ -155,10 +155,7 @@ class KotlinPluginLoader(
             KotlinInjector.loader.createRegisteredListeners(listener
                     , plugin)
 
-    override fun getPluginFileFilters(): Array<Pattern> = if (KotlinLoaderPlugin.getInstance().allowScripting())
-        arrayOf(*KotlinInjector.loader.pluginFileFilters, Pattern.compile("\\.kts$"))
-    else
-        arrayOf(*KotlinInjector.loader.pluginFileFilters)
+    override fun getPluginFileFilters(): Array<Pattern> = arrayOf(*KotlinInjector.loader.pluginFileFilters)
 
     override fun getPluginDescription(file: File): PluginDescriptionFile {
         return KotlinInjector.loader.getPluginDescription(file)

@@ -2,13 +2,12 @@ package dev.steyn.kotlinloader.jar
 
 import com.google.common.io.ByteStreams
 import dev.steyn.kotlinloader.api.KotlinPlugin
-import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.event.EventManager
-import dev.steyn.kotlinloader.event.EventTranslator
 import dev.steyn.kotlinloader.exception.InvalidPluginException
 import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import dev.steyn.kotlinloader.plugin.KotlinLoader
+import org.bukkit.plugin.PluginDescriptionFile
 import java.io.File
 import java.net.URL
 import java.security.CodeSource
@@ -21,7 +20,7 @@ class KotlinPluginClassLoader(
         val file: File,
         val folder: File,
         parent: ClassLoader = KotlinLoader::class.java.classLoader,
-        val desc: KotlinPluginDescription,
+        val desc: PluginDescriptionFile,
         private val jar: JarFile,
         private val manifest: Manifest? = jar.manifest,
         val url: URL = file.toURI().toURL()
@@ -65,7 +64,7 @@ class KotlinPluginClassLoader(
                 var bytes = jar.getInputStream(entry).use {
                     ByteStreams.toByteArray(it)
                 }
-                bytes = pluginLoader.server.unsafe.processClass(desc.bukkit, path, bytes)
+                bytes = pluginLoader.server.unsafe.processClass(desc, path, bytes)
                 bytes = EventManager.translateEvent(name, bytes)
 
                 val dot = name.lastIndexOf('.')

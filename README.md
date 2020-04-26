@@ -48,52 +48,28 @@ The KotlinLoader offers two ways to write a plugin.
 A regelar KotlinPlugin should be written as any other Spigot Plugin. The main class should extend `KotlinPlugin`.
 It is possible to use `object` for the main class.
 
-KotlinLoader also provides the ability to run plugins from KotlinScript. 
-KotlinScript Plugins are written in a DSL format. 
-The script will be executed **before** the server is properly setup.\
-Configuring the plugin should be done within the `plugin` tag.\
-It is mandatory to provide a name and a version for the plugin, just like a normal plugin.yml.
+#### Events
+The current Bukkit Event system does not fit within idiomatic Kotlin.
+The mandatory HandlerList forces you to write ugly companion objects which a @JvmStatic annotation.
+The KotlinLoader Plugin provides an event generation system which write this boilerplate for you!
 
-The actual plugin class will be generated on runtime by the plugin. It is possible to provide a classname, but it is not mandatory.
+##### Normal Events
+Events using this generator feature should either extend `dev.steyn.kotlinloader.api.event.Event` as superclass or have the `dev.steyn.kotlinloader.api.event.GenHandlers` annotation. 
+The latter one was introduced for applying the generator feature for Events which require a different superclass.
+Instantiation of the class `dev.steyn.kotlinloader.api.event.Event` is illegal outside of use of superclass. Please use the normal Bukkit event class. 
 
-Important notes when writing a KotlinScript Plugin:
-- The actual plugin instance is only available within the `load`, `enable` and `disable` tag.
-- Listening for events should be done with the `listen` function.
-- Commands should be handled with the `command` function.
-- Classes should be imported just like a normal plugin. 
+##### Cancellable
+The bukkit system for cancellable events also forces you to write alot of boilerplate. KotlinLoader introduces a default implementation which can be used through delegation.
 
-It is currently not possible to import other scripts.
+```kotlin
+class ServerFooEvent : Event() 
 
+@GenHandlers
+class PlayerFooEvent(who: Player) : PlayerEvent(who)
 
-Example Script
-````kotlin
-import org.bukkit.ChatColor.BLUE
-import org.bukkit.command.CommandSender
-import org.bukkit.event.player.PlayerJoinEvent
+class CancellablePlayerFooEvent(who: Player) : PlayerEvent(who), Cancellable by Cancellable.default()
+```
 
-plugin {
-    name = "JoinMessage"
-    version = "1.0"
-    description = "Simple JoinMessage Plugin"
-
-    val message = "${BLUE}Welcome to your server {name}!"
-
-    enable {
-        listen<PlayerJoinEvent> {
-            joinMessage = message.replace("{name}", player.name)
-        }
-
-        command("testjoinmessage") { sender: CommandSender, args: Array<out String> ->
-            sender.sendMessage(message.replace("{name}", sender.name))
-            true
-        } with {
-            description = "Test the joinmessage"
-            permission = "joinmessage.test"
-            aliases = listOf("tjm", "testmessage")
-        }
-    }   
-}
-````
 
 #### Compiling
 KotlinLoader is a maven project. 
@@ -111,7 +87,7 @@ Maven
 <dependency>
     <groupId>com.github.steenooo.KotlinLoader</groupId>
     <artifactId>kotlin-loader</artifactId>
-    <version>1.0.1</version>
+    <version>1.2.0</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -126,7 +102,7 @@ allprojects {
 	}
   
 dependencies {
-	        implementation 'com.github.steenooo:kotlin-loader:1.0.1'
+	        implementation 'com.github.steenooo:kotlin-loader:1.2.0'
 	}
 ```
 

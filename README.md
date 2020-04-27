@@ -7,11 +7,11 @@ Kotlin PluginLoader for Spigot.
 ### KotlinLoader
 Kotlin is a wonderful growing programming language with support for the JVM.
 This allows us to write Minecraft Plugins in Kotlin.
-While this works fine, it does bring some inconviences.
+While this works fine, it does bring some inconveniences.
 To run kotlin, it is mandatory for the kotlin library files to be available at runtime.
 While it is possible to provide these classes with the -classpath option, when starting the JVM, most spigot servers run in managed environments.
 The go-to workaround for this problem is to add these library files to the final jar by shading them. 
-This will increase your jar size alot. 
+This will increase your jar size a lot. 
 
 KotlinLoader provides a custom PluginLoader, that will provide the Kotlin library classes for you.
 
@@ -27,7 +27,7 @@ KotlinLoader provides a custom PluginLoader, that will provide the Kotlin librar
 
 
 #### Cons
-- This plugin uses alot of reflection and injection hacks to allows Kotlin classes to be accessed by JavaPlugins
+- This plugin uses a lot of reflection and injection hacks to allows Kotlin classes to be accessed by JavaPlugins
 - Plugins extending KotlinPlugin should be located in the <server_root>/plugins/kotlin folder.
 
 

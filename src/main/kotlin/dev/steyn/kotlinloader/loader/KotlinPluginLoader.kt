@@ -1,10 +1,10 @@
 package dev.steyn.kotlinloader.loader
 
-import dev.steyn.kotlinloader.KotlinPlugin
-import dev.steyn.kotlinloader.desc.KotlinPluginDescription
-import dev.steyn.kotlinloader.desc.asKotlin
+import dev.steyn.kotlinloader.api.KotlinPlugin
+import dev.steyn.kotlinloader.debug
 import dev.steyn.kotlinloader.exception.PluginFileMissingException
 import dev.steyn.kotlinloader.exception.PluginNotKotlinPluginException
+import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
 import dev.steyn.kotlinloader.loader.reflect.LanguageScanner
 import org.bukkit.Server
@@ -13,6 +13,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.event.Event
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLoader
 import org.bukkit.plugin.RegisteredListener
 import java.io.File
@@ -26,30 +27,32 @@ class KotlinPluginLoader(
         val server: Server
 ) : PluginLoader {
 
-    private val loaders: MutableList<KotlinPluginClassLoader> = CopyOnWriteArrayList<KotlinPluginClassLoader>()
+    private val loaders: MutableList<AbstractPluginClassLoader> = CopyOnWriteArrayList<AbstractPluginClassLoader>()
     private val classes: ConcurrentHashMap<String, Class<*>> = ConcurrentHashMap()
 
 
     init {
         KotlinInjector.hackedMap = HackedClassMap(KotlinInjector.javaMapField, this)
         KotlinInjector.javaMapField = KotlinInjector.hackedMap
+        KotlinInjector.kotlinPluginLoader = this
     }
 
 
     override fun loadPlugin(file: File): Plugin {
+        debug("Attempting to load plugin for file ${file.name}")
         if (!file.exists()) {
             throw PluginFileMissingException(file)
         }
-        val desc = getPluginDescription(file).asKotlin()
+        val desc = getPluginDescription(file)
         val scanner = LanguageScanner.createScanner(file, desc)
         if (scanner.isKotlinPlugin()) {
-            return this.loadPlugin(file, desc)
+            return this.loadJarPlugin(file, desc)
         }
         return KotlinInjector.loader.loadPlugin(file)
     }
 
 
-    private fun loadPlugin(file: File, desc: KotlinPluginDescription): Plugin {
+    private fun loadJarPlugin(file: File, desc: PluginDescriptionFile): Plugin {
         val parent = file.parentFile
         val dataFolder = File(parent, desc.name)
         val loader = KotlinPluginClassLoader(
@@ -60,6 +63,7 @@ class KotlinPluginLoader(
     }
 
     override fun disablePlugin(plugin: Plugin) {
+        debug("Attempting to disable ${plugin.name}")
         if (plugin !is KotlinPlugin) {
             throw PluginNotKotlinPluginException(plugin)
         }
@@ -69,16 +73,16 @@ class KotlinPluginLoader(
         plugin.logger.info("Disabling ${plugin.description.name}..")
 
         val loader = plugin.javaClass.classLoader
-        if (loader is KotlinPluginClassLoader) {
+        if (loader is AbstractPluginClassLoader) {
             loader.classes.keys.forEach {
                 unregisterClass(it)
             }
         }
-
         plugin.enabled = false
     }
 
     override fun enablePlugin(plugin: Plugin) {
+        debug("Attempting to enable ${plugin.name}")
         if (plugin !is KotlinPlugin) {
             throw PluginNotKotlinPluginException(plugin)
         }
@@ -86,14 +90,13 @@ class KotlinPluginLoader(
             return
         }
         val loader = plugin.javaClass.classLoader
-        if (loader !is KotlinPluginClassLoader) {
+        if (loader !is AbstractPluginClassLoader) {
             throw PluginNotKotlinPluginException(plugin)
         }
         if (!loaders.contains(loader)) {
             loaders.add(loader)
             server.logger.log(Level.WARNING, "Enabled plugin with unregistered PluginClassLoader ${plugin.getDescription().fullName}")
         }
-
         plugin.logger.info("Enabling ${plugin.description.fullName}..")
         try {
             plugin.enabled = true
@@ -118,7 +121,7 @@ class KotlinPluginLoader(
                 try {
                     cached = loader.findClass(name, false)
                 } catch (e: ClassNotFoundException) {
-                }
+                } catch (e: ClassCastException) {}
                 if (cached != null) {
                     break
                 }
@@ -148,12 +151,17 @@ class KotlinPluginLoader(
         }
     }
 
-
     override fun createRegisteredListeners(listener: Listener, plugin: Plugin): MutableMap<Class<out Event>, MutableSet<RegisteredListener>> =
             KotlinInjector.loader.createRegisteredListeners(listener
                     , plugin)
 
-    override fun getPluginFileFilters(): Array<Pattern> = KotlinInjector.loader.pluginFileFilters
+    override fun getPluginFileFilters(): Array<Pattern> = arrayOf(*KotlinInjector.loader.pluginFileFilters)
 
-    override fun getPluginDescription(file: File) = KotlinInjector.loader.getPluginDescription(file)
+    override fun getPluginDescription(file: File): PluginDescriptionFile {
+        return KotlinInjector.loader.getPluginDescription(file)
+    }
+
+
+    val plugins: List<KotlinPlugin>
+        get() = loaders.asSequence().map { it.plugin }.toList()
 }

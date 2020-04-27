@@ -1,8 +1,8 @@
-package dev.steyn.kotlinloader
+package dev.steyn.kotlinloader.api
 
-import dev.steyn.kotlinloader.desc.KotlinPluginDescription
 import dev.steyn.kotlinloader.exception.IllegalLoaderException
-import dev.steyn.kotlinloader.loader.KotlinPluginClassLoader
+import dev.steyn.kotlinloader.jar.KotlinPluginClassLoader
+import dev.steyn.kotlinloader.loader.AbstractPluginClassLoader
 import dev.steyn.kotlinloader.loader.KotlinPluginLoader
 import org.bukkit.Server
 import org.bukkit.command.Command
@@ -11,48 +11,58 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.PluginBase
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginLogger
 import java.io.*
 import java.net.URL
 import java.net.URLConnection
 import java.nio.charset.StandardCharsets
 import java.util.*
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
-
+/**
+ * Represents a KotlinPlugin.
+ * The mainclass of every KotlinPlugin should extend KotlinPlugin somewhere in the hierarchy.
+ *
+ */
 abstract class KotlinPlugin : PluginBase() {
 
 
     companion object {
-        //Keep count of the amount of plugins we manage.
-        val COUNT = AtomicInteger()
 
-
+        /**
+         * Get an instance of a KotlinPlugin
+         */
         @JvmStatic
         inline fun <reified T : KotlinPlugin> getPlugin(): T {
             return getPlugin(T::class)
         }
 
+        /**
+         * Get an instance of a KotlinPlugin
+         */
         @JvmStatic
         fun <T : KotlinPlugin> getPlugin(clazz: KClass<T>): T {
             return clazz.objectInstance ?: getPlugin(clazz.java)
         }
 
+        /**
+         * Get an instance of a KotlinPlugin
+         */
         @JvmStatic
         fun <T : KotlinPlugin> getPlugin(clazz: Class<T>) =
                 (clazz.classLoader as KotlinPluginClassLoader).plugin as T
     }
 
     init {
-        if (this::class.java.classLoader !is KotlinPluginClassLoader) {
+        if (this::class.java.classLoader !is AbstractPluginClassLoader) {
             throw IllegalLoaderException()
         }
-        COUNT.incrementAndGet()
     }
 
-    fun init(file: File, dataFolder: File, loader: KotlinPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: KotlinPluginDescription, server: Server) {
+    fun init(file: File, dataFolder: File, loader: AbstractPluginClassLoader, pluginLoader: KotlinPluginLoader, desc: PluginDescriptionFile, server: Server) {
         this._pluginDescriptionFile = desc
         this._file = file
         this._dataFolder = dataFolder
@@ -60,21 +70,25 @@ abstract class KotlinPlugin : PluginBase() {
         this._pluginLoader = pluginLoader
         this._server = server
         this._configFile = File(dataFolder, "config.yml")
-        this._config = reloadConfig0()
-        this._logger = PluginLogger(this)
+
+        if (!isScript()) {
+            this._config = reloadConfig0()
+        }
     }
 
-    private lateinit var _pluginDescriptionFile: KotlinPluginDescription
+    private lateinit var _pluginDescriptionFile: PluginDescriptionFile
     private lateinit var _file: File
     private lateinit var _dataFolder: File
     private var _enabled: Boolean = false
     private var _naggable = false
-    private lateinit var _loader: KotlinPluginClassLoader
+    private lateinit var _loader: AbstractPluginClassLoader
     private lateinit var _pluginLoader: KotlinPluginLoader
     private lateinit var _server: Server
     private lateinit var _configFile: File
-    private lateinit var _config: FileConfiguration
-    private lateinit var _logger: PluginLogger
+    private var _config: FileConfiguration? = null
+    private val _logger: PluginLogger by lazy {
+        PluginLogger(this)
+    }
 
     internal var enabled: Boolean
         set(value) {
@@ -89,6 +103,9 @@ abstract class KotlinPlugin : PluginBase() {
         }
         get() = _enabled
 
+    override fun getLogger(): Logger {
+        return _logger
+    }
 
     override fun onLoad() {}
     override fun onEnable() {}
@@ -97,22 +114,26 @@ abstract class KotlinPlugin : PluginBase() {
 
     override fun isEnabled() = enabled
 
-    override fun getLogger() = _logger
-
-
     override fun setNaggable(canNag: Boolean) {
         _naggable = canNag
     }
 
 
+    /**
+     * The DataFolder of the Plugin.
+     */
     override fun getDataFolder() = _dataFolder
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) = false
 
-    override fun getConfig() = _config
+    /**
+     * The FileConfiguration representation of the config.yml file.
+     */
+    override fun getConfig() = _config!!
+
     override fun getPluginLoader() = _pluginLoader
 
-    override fun getDescription() = _pluginDescriptionFile.bukkit
+    override fun getDescription() = _pluginDescriptionFile
 
 
     override fun getServer() = _server
@@ -125,7 +146,7 @@ abstract class KotlinPlugin : PluginBase() {
 
 
     override fun reloadConfig() { //load from config file in plugin directory if present - otherwise load values from the default config (included in the jar)
-        reloadConfig0()
+            reloadConfig0()
     }
 
     private fun reloadConfig0(): FileConfiguration {
@@ -152,7 +173,6 @@ abstract class KotlinPlugin : PluginBase() {
     override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {
         return null
     }
-
 
     override fun getResource(filename: String): InputStream? {
         Objects.requireNonNull(filename, "Filename cannot be null")
@@ -200,6 +220,8 @@ abstract class KotlinPlugin : PluginBase() {
         } catch (ex: IOException) {
             logger.log(Level.SEVERE, "Could not save " + outFile.name + " to " + outFile, ex)
         }
-
     }
+
+    open fun isScript() = false
+
 }

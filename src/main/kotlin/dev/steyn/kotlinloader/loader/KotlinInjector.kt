@@ -1,8 +1,8 @@
 package dev.steyn.kotlinloader.loader
 
 import dev.steyn.kotlinloader.loader.reflect.HackedClassMap
-import dev.steyn.kotlinloader.loader.reflect.reflect
-import dev.steyn.kotlinloader.loader.reflect.reflectMutable
+import dev.steyn.kotlinloader.reflect
+import dev.steyn.kotlinloader.reflectMutable
 import org.bukkit.Bukkit
 import org.bukkit.plugin.PluginLoader
 import org.bukkit.plugin.SimplePluginManager
@@ -32,4 +32,5 @@ object KotlinInjector {
 
     lateinit var hackedMap: HackedClassMap
 
+    lateinit var kotlinPluginLoader: KotlinPluginLoader
 }

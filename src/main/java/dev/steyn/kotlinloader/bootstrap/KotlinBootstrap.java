@@ -10,19 +10,35 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.Objects;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class KotlinBootstrap {
 
     public void init(KotlinLoaderPlugin plugin) {
-        plugin.getLogger().info("Preparing libraries..");
+        plugin.getLogger().info("Loading libraries..");
         FileConfiguration config = plugin.getConfig();
         File libraries = new File(plugin.getDataFolder(), "libraries");
         if (!libraries.exists()) {
             libraries.mkdirs();
         }
         String repository = config.getString("kotlin.repository");
-        List<String> dependencies = config.getStringList("kotlin.dependencies");
+        File version = new File(libraries, plugin.getDescription().getVersion());
+
+        if(!version.exists()) {
+            version.mkdirs();
+        }
+        File base = new File(version, "base");
+        if(!base.exists()) {
+            base.mkdirs();
+        }
+        List<String> baseDependencies = config.getStringList("kotlin.dependencies");
+        download(plugin, version, repository, baseDependencies);
+    }
+
+
+    public void download(KotlinLoaderPlugin plugin, File output, String repository, List<String> dependencies) {
         for (String dependency : dependencies) {
             try {
                 String url;
@@ -42,10 +58,11 @@ public class KotlinBootstrap {
                 }
 
                 URL x = new URL(url);
-                File file = new File(libraries, name);
+                File file = new File(output, name);
                 if (!file.exists()) {
                     file.createNewFile();
                     plugin.getLogger().info(String.format("Downloading %s %s..", name, url));
+
                     try (InputStream inputStream = x.openStream()) {
                         try (BufferedInputStream in = new BufferedInputStream(inputStream)) {
                             try (FileOutputStream outputStream = new FileOutputStream(file)) {
@@ -55,6 +72,7 @@ public class KotlinBootstrap {
                                 }
                             }
                         }
+
                     }
                 }
                 addFileToLoader(KotlinLoaderPlugin.class.getClassLoader(), file);
@@ -62,8 +80,6 @@ public class KotlinBootstrap {
                 e.printStackTrace();
             }
         }
-
-
     }
 
 

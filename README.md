@@ -13,7 +13,8 @@ While it is possible to provide these classes with the -classpath option, when s
 The go-to workaround for this problem is to add these library files to the final jar by shading them. 
 This will increase your jar size a lot. 
 
-KotlinLoader provides a custom PluginLoader, that will provide the Kotlin library classes for you.
+KotlinLoader provides a custom PluginLoader, that will provide the Kotlin library classes for you.\
+ 
 
 #### Included Kotlin Libraries
 - kotlin-stdlib
@@ -42,8 +43,33 @@ Build or download the plugin and place it into your plugins folder like any othe
 Note that plugins running with this pluginloader should go into the <server_root>/plugins/kotlin folder!
 
 ##### When writing a plugin
-A KotlinPlugin should be written as any other Spigot Plugin. The main class should extend `KotlinPlugin`.
-It is possible to use `object` for the main class.  
+The KotlinLoader offers two ways to write a plugin. 
+
+A regelar KotlinPlugin should be written as any other Spigot Plugin. The main class should extend `KotlinPlugin`.
+It is possible to use `object` for the main class.
+
+#### Events
+The current Bukkit Event system does not fit within idiomatic Kotlin.
+The mandatory HandlerList forces you to write ugly companion objects which a @JvmStatic annotation.
+The KotlinLoader Plugin provides an event generation system which write this boilerplate for you!
+
+##### Normal Events
+Events using this generator feature should either extend `dev.steyn.kotlinloader.api.event.Event` as superclass or have the `dev.steyn.kotlinloader.api.event.GenHandlers` annotation. 
+The latter one was introduced for applying the generator feature for Events which require a different superclass.
+Instantiation of the class `dev.steyn.kotlinloader.api.event.Event` is illegal outside of use of superclass. Please use the normal Bukkit event class. 
+
+##### Cancellable
+The bukkit system for cancellable events also forces you to write alot of boilerplate. KotlinLoader introduces a default implementation which can be used through delegation.
+
+```kotlin
+class ServerFooEvent : Event() 
+
+@GenHandlers
+class PlayerFooEvent(who: Player) : PlayerEvent(who)
+
+class CancellablePlayerFooEvent(who: Player) : PlayerEvent(who), Cancellable by Cancellable.default()
+```
+
 
 #### Compiling
 KotlinLoader is a maven project. 
@@ -59,9 +85,9 @@ Maven
 </repository>
 
 <dependency>
-    <groupId>com.github.steenooo</groupId>
-    <artifactId>KotlinLoader</artifactId>
-    <version>1.0.1</version>
+    <groupId>com.github.steenooo.KotlinLoader</groupId>
+    <artifactId>kotlin-loader</artifactId>
+    <version>1.2.0</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -76,9 +102,11 @@ allprojects {
 	}
   
 dependencies {
-	        implementation 'com.github.steenooo:kotlin-loader:1.0.1'
+	        implementation 'com.github.steenooo:kotlin-loader:1.2.0'
 	}
 ```
+
+
 
 
 This project was inspired by [ScalaLoader](https://github.com/Jannyboy11/ScalaPluginLoader)

@@ -1,6 +1,7 @@
 package dev.steyn.kotlinloader.loader.reflect
 
-import dev.steyn.kotlinloader.desc.KotlinPluginDescription
+import dev.steyn.kotlinloader.readClass
+import org.bukkit.plugin.PluginDescriptionFile
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES
@@ -10,16 +11,16 @@ import java.io.File
 import java.util.jar.JarFile
 
 
-class LanguageScanner(val data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
+class LanguageScanner(data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
 
 
     companion object {
         private const val ASM_API_VERSION: Int = Opcodes.ASM7
 
-        private const val KOTLIN_PLUGIN = "dev/steyn/kotlinloader/KotlinPlugin"
-        private const val KOTLIN_ANNOTATION = "Ldev/steyn/kotlinloader/Kotlin;"
+        private const val KOTLIN_PLUGIN = "dev/steyn/kotlinloader/api/KotlinPlugin"
+        private const val KOTLIN_ANNOTATION = "Ldev/steyn/kotlinloader/api/Kotlin;"
 
-        fun createScanner(file: File, descriptionFile: KotlinPluginDescription): LanguageScanner {
+        fun createScanner(file: File, descriptionFile: PluginDescriptionFile): LanguageScanner {
             return JarFile(file).use { LanguageScanner(it.readClass(descriptionFile.main)) }
         }
 
@@ -45,6 +46,7 @@ class LanguageScanner(val data: ByteArray) : ClassVisitor(ASM_API_VERSION) {
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor? {
         if(descriptor.equals(KOTLIN_ANNOTATION)) {
             hasKotlinAnnotation = true
+            //We'll assume that this class is a subclass of KotlinPlugin
         }
         return super.visitAnnotation(descriptor, visible)
     }

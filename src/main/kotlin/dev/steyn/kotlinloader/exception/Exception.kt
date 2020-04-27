@@ -18,7 +18,7 @@ open class KotlinPluginException : Exception {
 class IllegalLoaderException : KotlinPluginException("ClassLoader must be a KotlinPluginClassLoader.")
 
 class InjectException(msg: String) : KotlinPluginException(msg)
-class PluginNotKotlinPluginException(plugin: Plugin) : KotlinPluginException("${plugin.name} is not a Kotlin Plugin.")
+class PluginNotKotlinPluginException(plugin: Plugin) : KotlinPluginException("${plugin.name} is not a KotlinPlugin.")
 class PluginFileMissingException(file: File) : KotlinPluginException("Unable to find ${file.path}")
 
 class InvalidPluginException : Exception {

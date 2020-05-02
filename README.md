@@ -18,6 +18,8 @@ KotlinLoader provides a custom PluginLoader, that will provide the Kotlin librar
 
 #### Included Kotlin Libraries
 - kotlin-stdlib
+- kotlin-stdlib-jdk8
+- kotlin-stdlib-jdk7
 - kotlinx-coroutines
 - kotlin-reflect
 
@@ -87,7 +89,7 @@ Maven
 <dependency>
     <groupId>com.github.steenooo</groupId>
     <artifactId>kotlin-loader</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -102,7 +104,7 @@ allprojects {
 	}
   
 dependencies {
-	        implementation 'com.github.steenooo:kotlin-loader:1.2.1'
+	        implementation 'com.github.steenooo:kotlin-loader:1.2.2'
 	}
 ```
 
